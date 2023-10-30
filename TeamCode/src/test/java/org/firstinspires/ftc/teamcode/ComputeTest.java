@@ -171,7 +171,7 @@ public class ComputeTest {
   @Test
   public void armUpAutoOffFast() {
     Compute.memory.targetArmPosition = Compute.armUpPosition;
-    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshhold - 1;
+    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshold - 1;
     Compute.memory.autoMoveArm = false;
     compute();
     assertEquals(0f, output.armMotorPower);
@@ -180,7 +180,7 @@ public class ComputeTest {
   @Test
   public void armUpAutoOffSlow() {
     Compute.memory.targetArmPosition = Compute.armUpPosition;
-    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshhold;
+    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshold;
     Compute.memory.autoMoveArm = false;
     compute();
     assertEquals(0f, output.armMotorPower);
@@ -189,7 +189,7 @@ public class ComputeTest {
   @Test
   public void armDownAutoOffFast() {
     Compute.memory.targetArmPosition = Compute.armDownPosition;
-    input.armPosition = Compute.armDownPosition + Compute.armSlowThreshhold + 1;
+    input.armPosition = Compute.armDownPosition + Compute.armSlowThreshold + 1;
     Compute.memory.autoMoveArm = false;
     compute();
     assertEquals(0f, output.armMotorPower);
@@ -198,7 +198,7 @@ public class ComputeTest {
   @Test
   public void armDownAutoOffSlow() {
     Compute.memory.targetArmPosition = Compute.armDownPosition;
-    input.armPosition = Compute.armDownPosition + Compute.armSlowThreshhold;
+    input.armPosition = Compute.armDownPosition + Compute.armSlowThreshold;
     Compute.memory.autoMoveArm = false;
     compute();
     assertEquals(0f, output.armMotorPower);
@@ -215,7 +215,7 @@ public class ComputeTest {
   @Test
   public void armUpFast() {
     Compute.memory.targetArmPosition = Compute.armUpPosition;
-    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshhold - 1;
+    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshold - 1;
     Compute.memory.autoMoveArm = true;
     compute();
     assertEquals(Compute.armFast, output.armMotorPower);
@@ -224,7 +224,7 @@ public class ComputeTest {
   @Test
   public void armUpSlow() {
     Compute.memory.targetArmPosition = Compute.armUpPosition;
-    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshhold;
+    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshold;
     Compute.memory.autoMoveArm = true;
     compute();
     assertEquals(Compute.armSlow, output.armMotorPower);
@@ -241,7 +241,7 @@ public class ComputeTest {
   @Test
   public void armDownFast() {
     Compute.memory.targetArmPosition = Compute.armDownPosition;
-    input.armPosition = Compute.armDownPosition + Compute.armSlowThreshhold + 1;
+    input.armPosition = Compute.armDownPosition + Compute.armSlowThreshold + 1;
     Compute.memory.autoMoveArm = true;
     compute();
     assertEquals(-Compute.armFast, output.armMotorPower);
@@ -250,7 +250,7 @@ public class ComputeTest {
   @Test
   public void armDownSlow() {
     Compute.memory.targetArmPosition = Compute.armDownPosition;
-    input.armPosition = Compute.armDownPosition + Compute.armSlowThreshhold;
+    input.armPosition = Compute.armDownPosition + Compute.armSlowThreshold;
     Compute.memory.autoMoveArm = true;
     compute();
     assertEquals(-Compute.armSlow, output.armMotorPower);

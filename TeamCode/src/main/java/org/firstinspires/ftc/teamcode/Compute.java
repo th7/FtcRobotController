@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 public class Compute {
   public static final int armUpPosition = 140;
   public static final int armDownPosition = 0;
-  public static final int armSlowThreshhold = 25;
+  public static final int armSlowThreshold = 25;
 
   public static final float armFast = 0.1f;
   public static final float armSlow = 0.05f;
@@ -110,11 +110,11 @@ public class Compute {
       return 0f;
     }
 
-    if (armPosition < memory.targetArmPosition && memory.targetArmPosition - armPosition <= armSlowThreshhold) {
+    if (armPosition < memory.targetArmPosition && memory.targetArmPosition - armPosition <= armSlowThreshold) {
       return armSlow;
     }
 
-    if (armPosition > memory.targetArmPosition && armPosition - memory.targetArmPosition <= armSlowThreshhold) {
+    if (armPosition > memory.targetArmPosition && armPosition - memory.targetArmPosition <= armSlowThreshold) {
       return -armSlow;
     }
 

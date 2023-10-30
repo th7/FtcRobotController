@@ -1,16 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 @Disabled
 @TeleOp(name="BaseOp2023", group="Linear Opmode")
 public class BaseOp2023 extends LinearOpMode {
-  private ElapsedTime runtime = new ElapsedTime();
+  private final ElapsedTime runtime = new ElapsedTime();
   private DcMotor leftFront = null;
   private DcMotor rightFront = null;
   private DcMotor leftBack = null;
