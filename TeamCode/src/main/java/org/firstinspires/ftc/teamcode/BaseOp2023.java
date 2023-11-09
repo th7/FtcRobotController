@@ -8,19 +8,18 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Disabled
 @TeleOp(name="BaseOp2023", group="Linear Opmode")
-public class BaseOp2023 extends LinearOpMode {
+public abstract class BaseOp2023 extends LinearOpMode {
   private final ElapsedTime runtime = new ElapsedTime();
-  private DcMotor leftFront = null;
-  private DcMotor rightFront = null;
-  private DcMotor leftBack = null;
-  private DcMotor rightBack = null;
+  DcMotor leftFront = null;
+  DcMotor rightFront = null;
+  DcMotor leftBack = null;
+  DcMotor rightBack = null;
   private DcMotor armMotor1 = null;
   private DcMotor armMotor2 = null;
   private DcMotor winchMotor = null;
 
   @Override
   public void runOpMode() {
-
     leftFront  = hardwareMap.get(DcMotor.class, "LeftFront");
     rightFront = hardwareMap.get(DcMotor.class, "RightFront");
     leftBack = hardwareMap.get(DcMotor.class, "LeftBack");
@@ -37,6 +36,8 @@ public class BaseOp2023 extends LinearOpMode {
 
     armMotor1.setDirection(DcMotor.Direction.REVERSE);
     armMotor2.setDirection(DcMotor.Direction.REVERSE);
+
+    typeSpecificInit();
 
     telemetry.addData("Status", "Initialized");
     telemetry.update();
@@ -62,7 +63,7 @@ public class BaseOp2023 extends LinearOpMode {
       input.armPosition = armMotor1.getCurrentPosition();
       input.wheelPosition = leftFront.getCurrentPosition();
 
-      Output output = Compute.compute(input);
+      Output output = compute(input);
 
       leftFront.setPower(output.frontLeftPower);
       rightFront.setPower(output.frontRightPower);
@@ -74,4 +75,8 @@ public class BaseOp2023 extends LinearOpMode {
       winchMotor.setPower(output.winchMotorPower);
     }
   }
+
+  protected abstract Output compute(Input input);
+
+  protected abstract void typeSpecificInit();
 }

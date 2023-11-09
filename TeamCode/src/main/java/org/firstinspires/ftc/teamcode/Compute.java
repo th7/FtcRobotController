@@ -21,6 +21,25 @@ public class Compute {
     return finalOutput;
   }
 
+  public static Output computeAutonomous(Input input) {
+    Output output = new Output();
+
+    if (!memory.autoDrive) {
+      memory.autoDrive = true;
+      memory.targetMovePosition = input.wheelPosition + 1000;
+    }
+
+    int distanceToMove = memory.targetMovePosition - input.wheelPosition;
+    float power = clip(distanceToMove / 100f);
+
+    output.frontLeftPower = power;
+    output.frontRightPower = power;
+    output.rearLeftPower = power;
+    output.rearRightPower = power;
+
+    return output;
+  }
+
   private static void drive(float gameStickRightX, float gameStickLeftY, float gameStickLeftX, int wheelPosition, Output output) {
     if (gameStickLeftY != 0 || gameStickRightX != 0 || gameStickLeftX != 0) {
       memory.autoDrive = false;

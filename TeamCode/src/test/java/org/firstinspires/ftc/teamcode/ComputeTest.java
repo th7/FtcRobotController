@@ -13,6 +13,8 @@ public class ComputeTest {
 
   public void compute() { output = Compute.compute(input); }
 
+  public void computeAuto() { output = Compute.computeAutonomous(input); }
+
   @BeforeEach
   public void beforeEach() {
     Compute.memory = new Memory();
@@ -284,7 +286,7 @@ public class ComputeTest {
     Compute.memory.targetMovePosition = 200;
     input.wheelPosition = 0;
     Compute.memory.autoDrive = true;
-    compute();
+    computeAuto();
     assertEquals(1f, output.frontLeftPower);
     assertEquals(1f, output.frontRightPower);
     assertEquals(1f, output.rearLeftPower);
@@ -296,7 +298,7 @@ public class ComputeTest {
     Compute.memory.targetMovePosition = 200;
     input.wheelPosition = 150;
     Compute.memory.autoDrive = true;
-    compute();
+    computeAuto();
     assertEquals(0.5f, output.frontLeftPower);
     assertEquals(0.5f, output.frontRightPower);
     assertEquals(0.5f, output.rearLeftPower);
@@ -308,7 +310,7 @@ public class ComputeTest {
     Compute.memory.targetMovePosition = 200;
     input.wheelPosition = 400;
     Compute.memory.autoDrive = true;
-    compute();
+    computeAuto();
     assertEquals(-1f, output.frontLeftPower);
     assertEquals(-1f, output.frontRightPower);
     assertEquals(-1f, output.rearLeftPower);
@@ -320,7 +322,7 @@ public class ComputeTest {
     Compute.memory.targetMovePosition = 200;
     input.wheelPosition = 200;
     Compute.memory.autoDrive = true;
-    compute();
+    computeAuto();
     // the last argument specifying an allowable delta of 0
     // may seem like nonsense, but it tricks java into agreeing
     // that 0 and -0 are in fact equal
