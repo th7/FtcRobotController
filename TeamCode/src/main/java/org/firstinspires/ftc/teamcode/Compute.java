@@ -11,97 +11,131 @@ public class Compute {
   public static Memory memory = new Memory();
 
   public static Output compute(Input input) {
-    Output finalOutput = new Output();
+    Output output = new Output();
 
-    finalOutput.armMotorPower = arm(input.dPadUp, input.dPadDown, input.cross, input.triangle, input.armPosition);
-    setAutoMove(input.rightTrigger, input.wheelPosition);
-    drive(input.gameStickRightX, input.gameStickLeftY, input.gameStickLeftX, input.wheelPosition, finalOutput);
-    finalOutput.winchMotorPower = winch(input.dPadRight, input.dPadLeft);
+    output.armMotorPower = arm(input.dPadUp, input.dPadDown, input.cross, input.triangle, input.armPosition);
+    output.movement = manualDrive(input.gameStickRightX, input.gameStickLeftY, input.gameStickLeftX);
+    output.winchMotorPower = winch(input.dPadRight, input.dPadLeft);
 
-    return finalOutput;
+    manualClaw(input.leftBumper, input.rightBumper, input.leftTrigger, input.rightTrigger);
+    output.topClawPosition = memory.topClawPosition;
+    output.bottomClawPosition = memory.bottomClawPosition;
+
+    return output;
   }
 
   public static Output computeAutonomous(Input input) {
     Output output = new Output();
 
-    if (!memory.autoDrive) {
-      memory.autoDrive = true;
-      memory.targetMovePosition = input.wheelPosition + 1000;
+    if (!inProgress(input.wheelPosition, input.yaw)) {
+      runStep(memory.currentStep + 1);
     }
 
-    int distanceToMove = memory.targetMovePosition - input.wheelPosition;
+    output.topClawPosition = memory.topClawPosition;
+    output.bottomClawPosition = memory.bottomClawPosition;
+    output.armMotorPower = autoArmPower(input.armPosition);
+
+    if (inProgressTurn(input.yaw)) {
+      output.movement = autoTurn(input.yaw, memory.targetAngle);
+    } else {
+      output.movement = autoMove(input.wheelPosition, memory.targetMovePosition);
+    }
+
+    return output;
+  }
+
+  private static Output.Movement manualDrive(float gameStickRightX, float gameStickLeftY, float gameStickLeftX) {
+    Output.Movement movement = new Output.Movement();
+    Output.Movement turnMovement = turnOutput(gameStickRightX);
+    Output.Movement moveMovement = manualMove(gameStickLeftY);
+    Output.Movement strafeMovement = strafeOutput(gameStickLeftX);
+
+    movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower + strafeMovement.frontLeftPower);
+    movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower + strafeMovement.frontRightPower);
+    movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower + strafeMovement.rearLeftPower);
+    movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower + strafeMovement.rearRightPower);
+
+    return movement;
+  }
+
+  private static void manualClaw(boolean leftBumper, boolean rightBumper, float leftTrigger, float rightTrigger) {
+    if (rightBumper) {
+      memory.topClawPosition = 1d;
+    }
+    if (leftBumper) {
+      memory.topClawPosition = 0d;
+    }
+    if (rightTrigger != 0) {
+      memory.bottomClawPosition = 1d;
+    }
+    if (leftTrigger != 0) {
+      memory.bottomClawPosition = 0d;
+    }
+  }
+
+  private static Output.Movement autoMove(int wheelPosition, int targetMovePosition) {
+    Output.Movement movement = new Output.Movement();
+
+    int distanceToMove = targetMovePosition - wheelPosition;
     float power = clip(distanceToMove / 100f);
 
-    output.frontLeftPower = power;
-    output.frontRightPower = power;
-    output.rearLeftPower = power;
-    output.rearRightPower = power;
+    movement.frontLeftPower = power;
+    movement.frontRightPower = power;
+    movement.rearLeftPower = power;
+    movement.rearRightPower = power;
 
-    return output;
+    return movement;
   }
 
-  private static void drive(float gameStickRightX, float gameStickLeftY, float gameStickLeftX, int wheelPosition, Output output) {
-    if (gameStickLeftY != 0 || gameStickRightX != 0 || gameStickLeftX != 0) {
-      memory.autoDrive = false;
+  private static Output.Movement autoTurn(double yaw, double targetAngle) {
+    Output.Movement movement = new Output.Movement();
+
+    double distanceToTurn = targetAngle - yaw;
+    float power = clip((float) (distanceToTurn / 45d));
+
+    if (distanceToTurn > 180) {
+      movement.frontLeftPower = -power;
+      movement.frontRightPower = power;
+      movement.rearLeftPower = -power;
+      movement.rearRightPower = power;
+    } else {
+      movement.frontLeftPower = power;
+      movement.frontRightPower = -power;
+      movement.rearLeftPower = power;
+      movement.rearRightPower = -power;
+
     }
-
-    Output turnOutput = turnOutput(gameStickRightX);
-    Output moveOutput = moveOutput(gameStickLeftY, wheelPosition);
-    Output strafeOutput = strafeOutput(gameStickLeftX);
-
-    output.frontLeftPower = clip(turnOutput.frontLeftPower + moveOutput.frontLeftPower + strafeOutput.frontLeftPower);
-    output.frontRightPower = clip(turnOutput.frontRightPower + moveOutput.frontRightPower + strafeOutput.frontRightPower);
-    output.rearLeftPower = clip(turnOutput.rearLeftPower + moveOutput.rearLeftPower + strafeOutput.rearLeftPower);
-    output.rearRightPower = clip(turnOutput.rearRightPower + moveOutput.rearRightPower + strafeOutput.rearRightPower);
+    return movement;
   }
 
-  private static void setAutoMove(float rightTrigger, int wheelPosition) {
-    if (rightTrigger != 0)  {
-      memory.autoDrive = true;
-      memory.targetMovePosition = wheelPosition + 200;
-    }
+  private static Output.Movement turnOutput(float gameStickRightX) {
+    Output.Movement movement = new Output.Movement();
+    movement.frontLeftPower = gameStickRightX;
+    movement.frontRightPower = -gameStickRightX;
+    movement.rearLeftPower = gameStickRightX;
+    movement.rearRightPower = -gameStickRightX;
+    return movement;
   }
 
-  private static Output turnOutput(float gameStickRightX) {
-    Output output = new Output();
-    output.frontLeftPower = gameStickRightX;
-    output.frontRightPower = -gameStickRightX;
-    output.rearLeftPower = gameStickRightX;
-    output.rearRightPower = -gameStickRightX;
-    return output;
+  private static Output.Movement manualMove(float gameStickLeftY) {
+    Output.Movement movement = new Output.Movement();
+
+    movement.frontLeftPower = -gameStickLeftY;
+    movement.frontRightPower = -gameStickLeftY;
+    movement.rearLeftPower = -gameStickLeftY;
+    movement.rearRightPower = -gameStickLeftY;
+
+    return movement;
   }
 
-  private static Output moveOutput(float gameStickLeftY, int wheelPosition) {
-    Output output = new Output();
+  private static Output.Movement strafeOutput(float gameStickLeftX) {
+    Output.Movement movement = new Output.Movement();
+    movement.frontLeftPower = -gameStickLeftX;
+    movement.frontRightPower = gameStickLeftX;
+    movement.rearLeftPower = gameStickLeftX;
+    movement.rearRightPower = -gameStickLeftX;
 
-    if (memory.autoDrive) {
-      int distanceToMove = memory.targetMovePosition - wheelPosition;
-      float power = distanceToMove / 100f;
-
-      output.frontLeftPower = power;
-      output.frontRightPower = power;
-      output.rearLeftPower = power;
-      output.rearRightPower = power;
-
-      return output;
-    }
-
-    output.frontLeftPower = -gameStickLeftY;
-    output.frontRightPower = -gameStickLeftY;
-    output.rearLeftPower = -gameStickLeftY;
-    output.rearRightPower = -gameStickLeftY;
-
-    return output;
-  }
-
-  private static Output strafeOutput(float gameStickLeftX) {
-    Output output = new Output();
-    output.frontLeftPower = -gameStickLeftX;
-    output.frontRightPower = gameStickLeftX;
-    output.rearLeftPower = gameStickLeftX;
-    output.rearRightPower = -gameStickLeftX;
-
-    return output;
+    return movement;
   }
 
   private static float arm(boolean dPadUp, boolean dPadDown, boolean cross, boolean triangle, int armPosition) {
@@ -129,6 +163,10 @@ public class Compute {
       return 0f;
     }
 
+    return autoArmPower(armPosition);
+  }
+
+  public static float autoArmPower(int armPosition) {
     if (armPosition < memory.targetArmPosition && memory.targetArmPosition - armPosition <= armSlowThreshold) {
       return armSlow;
     }
@@ -170,6 +208,86 @@ public class Compute {
     }
 
     return unclipped;
+  }
+
+  public static void runStep(int stepNumber) {
+    switch(stepNumber) {
+      case 1: step1(); break;
+      case 2: step2(); break;
+      case 3: step3(); break;
+      case 4: step4(); break;
+      case 5: step5(); break;
+      case 6: step6(); break;
+      case 7: step7(); break;
+      case 8: step8(); break;
+    }
+    memory.currentStep = stepNumber;
+  }
+
+  public static boolean inProgress(int wheelPosition, double yaw) {
+    return inProgressMove(wheelPosition) || inProgressTurn(yaw);
+  }
+
+  public static boolean inProgressMove(int wheelPosition) {
+    return memory.targetMovePosition != wheelPosition;
+  }
+
+  public static boolean inProgressTurn(double yaw) {
+    return !closeEnough(memory.targetAngle, yaw);
+  }
+
+
+  public static boolean closeEnough(double a, double b) {
+    double difference = Math.abs(a - b);
+    return difference <= 0.1;
+  }
+
+  public static void step1() {
+    move(1000);
+  }
+
+  public static void step2() {
+    turn(90);
+  }
+
+  public static void step3() {
+    move(1000);
+  }
+
+  public static void step4() {
+    turn(90);
+  }
+
+  public static void step5() {
+    move(1000);
+  }
+
+  public static void step6() {
+    turn(90);
+  }
+
+  public static void step7() {
+    move(1000);
+  }
+
+  public static void step8() {
+    turn(90);
+  }
+
+  public static void turn(double turnAmount) {
+    double targetAngle = memory.targetAngle + turnAmount;
+
+    if (targetAngle > 180) {
+      memory.targetAngle = targetAngle - 360;
+    } else if (targetAngle < -180) {
+      memory.targetAngle = targetAngle + 360;
+    } else {
+      memory.targetAngle = targetAngle;
+    }
+  }
+
+  public static void move(int moveAmount) {
+    memory.targetMovePosition += moveAmount;
   }
 
   // private static float logistic(float offset) {

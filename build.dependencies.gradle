@@ -5,6 +5,7 @@ repositories {
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     implementation 'org.firstinspires.ftc:Inspection:9.0.1'

@@ -13,7 +13,12 @@ public class Input {
   public boolean triangle = false;
   public boolean cross = false;
   public float rightTrigger = 0f;
+  public float leftTrigger = 0f;
+  public boolean rightBumper = false;
+  public boolean leftBumper = false;
+
 
   public int armPosition = 0;
   public int wheelPosition = 0;
+  public double yaw = 0d;
 }
