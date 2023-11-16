@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import java.util.ArrayList;
+
 public class Output {
   public static class Movement {
     public float frontLeftPower = 0f;
@@ -14,4 +16,6 @@ public class Output {
 
   public double topClawPosition = 0d;
   public double bottomClawPosition = 0d;
+
+  public ArrayList<String[]> telemetry;
 }

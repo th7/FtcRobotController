@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class Compute {
   public static final int armUpPosition = 140;
   public static final int armDownPosition = 0;
@@ -10,6 +12,7 @@ public class Compute {
 
   public static Memory memory = new Memory();
 
+  public static Telemetry telemetry;
   public static Output compute(Input input) {
     Output output = new Output();
 
@@ -29,6 +32,7 @@ public class Compute {
 
     if (!inProgress(input.wheelPosition, input.yaw)) {
       runStep(memory.currentStep + 1);
+      telemetry.addData("step", memory.currentStep);
     }
 
     output.topClawPosition = memory.topClawPosition;
@@ -220,6 +224,7 @@ public class Compute {
       case 6: step6(); break;
       case 7: step7(); break;
       case 8: step8(); break;
+      case 9: step9(); break;
     }
     memory.currentStep = stepNumber;
   }
@@ -274,6 +279,9 @@ public class Compute {
     turn(90);
   }
 
+  public static void step9() {
+    memory.targetArmPosition = armUpPosition;
+  }
   public static void turn(double turnAmount) {
     double targetAngle = memory.targetAngle + turnAmount;
 

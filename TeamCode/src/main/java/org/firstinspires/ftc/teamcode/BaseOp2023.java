@@ -47,13 +47,15 @@ public abstract class BaseOp2023 extends LinearOpMode {
     imu = hardwareMap.get(IMU.class, "IMU");
     imu.resetYaw();
 
-    topClaw = hardwareMap.get(Servo.class, "TopClaw");
-    bottomClaw = hardwareMap.get(Servo.class, "TopClaw");
+//    topClaw = hardwareMap.get(Servo.class, "TopClaw");
+//    bottomClaw = hardwareMap.get(Servo.class, "BottomClaw");
 
     typeSpecificInit();
 
     telemetry.addData("Status", "Initialized");
     telemetry.update();
+    Compute.telemetry = telemetry;
+
     waitForStart();
     runtime.reset();
 
@@ -83,6 +85,8 @@ public abstract class BaseOp2023 extends LinearOpMode {
 
       Output output = compute(input);
 
+      telemetry.update();
+
       leftFront.setPower(output.movement.frontLeftPower);
       rightFront.setPower(output.movement.frontRightPower);
       leftBack.setPower(output.movement.rearLeftPower);
@@ -92,8 +96,8 @@ public abstract class BaseOp2023 extends LinearOpMode {
       armMotor2.setPower(output.armMotorPower);
       winchMotor.setPower(output.winchMotorPower);
 
-      topClaw.setPosition((output.topClawPosition));
-      bottomClaw.setPosition((output.bottomClawPosition));
+//      topClaw.setPosition((output.topClawPosition));
+//      bottomClaw.setPosition((output.bottomClawPosition));
     }
   }
 

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class Input {
   public float gameStickLeftX = 0f;
   public float gameStickLeftY = 0f;

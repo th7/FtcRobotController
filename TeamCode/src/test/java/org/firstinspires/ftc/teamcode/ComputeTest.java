@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 public class ComputeTest {
   Input input = new Input();
   Output output;
+  Compute compute = new Compute();
 
   public void compute() { output = Compute.compute(input); }
 
