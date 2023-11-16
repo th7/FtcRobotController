@@ -12,14 +12,12 @@ public class ComputeTest {
   Output output;
   Compute compute = new Compute();
 
-  public void compute() { output = Compute.compute(input); }
+  public void compute() { output = compute.compute(input); }
 
-  public void computeAuto() { output = Compute.computeAutonomous(input); }
+  public void computeAuto() { output = compute.computeAutonomous(input); }
 
   @BeforeEach
-  public void beforeEach() {
-    Compute.memory = new Memory();
-  }
+  public void beforeEach() { compute.memory = new Memory(); }
 
   @Test
   public void defaults() {
@@ -149,54 +147,54 @@ public class ComputeTest {
 
   @Test
   public void armUp() {
-    Compute.memory.autoMoveArm = true;
+    compute.memory.autoMoveArm = true;
     input.dPadUp = true;
     compute();
-    assertFalse(Compute.memory.autoMoveArm);
+    assertFalse(compute.memory.autoMoveArm);
     assertEquals(0.25f, output.armMotorPower);
   }
 
   @Test
   public void armDown() {
-    Compute.memory.autoMoveArm = true;
+    compute.memory.autoMoveArm = true;
     input.dPadDown = true;
     compute();
-    assertFalse(Compute.memory.autoMoveArm);
+    assertFalse(compute.memory.autoMoveArm);
     assertEquals(-0.25f, output.armMotorPower);
   }
 
   @Test
   public void armUpAutoOffFast() {
-    Compute.memory.targetArmPosition = Compute.armUpPosition;
-    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshold - 1;
-    Compute.memory.autoMoveArm = false;
+    compute.memory.targetArmPosition = compute.armUpPosition;
+    input.armPosition = compute.armUpPosition - compute.armSlowThreshold - 1;
+    compute.memory.autoMoveArm = false;
     compute();
     assertEquals(0f, output.armMotorPower);
   }
 
   @Test
   public void armUpAutoOffSlow() {
-    Compute.memory.targetArmPosition = Compute.armUpPosition;
-    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshold;
-    Compute.memory.autoMoveArm = false;
+    compute.memory.targetArmPosition = compute.armUpPosition;
+    input.armPosition = compute.armUpPosition - compute.armSlowThreshold;
+    compute.memory.autoMoveArm = false;
     compute();
     assertEquals(0f, output.armMotorPower);
   }
 
   @Test
   public void armDownAutoOffFast() {
-    Compute.memory.targetArmPosition = Compute.armDownPosition;
-    input.armPosition = Compute.armDownPosition + Compute.armSlowThreshold + 1;
-    Compute.memory.autoMoveArm = false;
+    compute.memory.targetArmPosition = compute.armDownPosition;
+    input.armPosition = compute.armDownPosition + compute.armSlowThreshold + 1;
+    compute.memory.autoMoveArm = false;
     compute();
     assertEquals(0f, output.armMotorPower);
   }
 
   @Test
   public void armDownAutoOffSlow() {
-    Compute.memory.targetArmPosition = Compute.armDownPosition;
-    input.armPosition = Compute.armDownPosition + Compute.armSlowThreshold;
-    Compute.memory.autoMoveArm = false;
+    compute.memory.targetArmPosition = compute.armDownPosition;
+    input.armPosition = compute.armDownPosition + compute.armSlowThreshold;
+    compute.memory.autoMoveArm = false;
     compute();
     assertEquals(0f, output.armMotorPower);
   }
@@ -205,52 +203,52 @@ public class ComputeTest {
   public void setArmUp() {
     input.triangle = true;
     compute();
-    assertTrue(Compute.memory.autoMoveArm);
-    assertEquals(Compute.armUpPosition, Compute.memory.targetArmPosition);
+    assertTrue(compute.memory.autoMoveArm);
+    assertEquals(compute.armUpPosition, compute.memory.targetArmPosition);
   }
 
   @Test
   public void armUpFast() {
-    Compute.memory.targetArmPosition = Compute.armUpPosition;
-    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshold - 1;
-    Compute.memory.autoMoveArm = true;
+    compute.memory.targetArmPosition = compute.armUpPosition;
+    input.armPosition = compute.armUpPosition - compute.armSlowThreshold - 1;
+    compute.memory.autoMoveArm = true;
     compute();
-    assertEquals(Compute.armFast, output.armMotorPower);
+    assertEquals(compute.armFast, output.armMotorPower);
   }
 
   @Test
   public void armUpSlow() {
-    Compute.memory.targetArmPosition = Compute.armUpPosition;
-    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshold;
-    Compute.memory.autoMoveArm = true;
+    compute.memory.targetArmPosition = compute.armUpPosition;
+    input.armPosition = compute.armUpPosition - compute.armSlowThreshold;
+    compute.memory.autoMoveArm = true;
     compute();
-    assertEquals(Compute.armSlow, output.armMotorPower);
+    assertEquals(compute.armSlow, output.armMotorPower);
   }
 
   @Test
   public void setArmDown() {
     input.cross = true;
     compute();
-    assertTrue(Compute.memory.autoMoveArm);
-    assertEquals(Compute.armDownPosition, Compute.memory.targetArmPosition);
+    assertTrue(compute.memory.autoMoveArm);
+    assertEquals(compute.armDownPosition, compute.memory.targetArmPosition);
   }
 
   @Test
   public void armDownFast() {
-    Compute.memory.targetArmPosition = Compute.armDownPosition;
-    input.armPosition = Compute.armDownPosition + Compute.armSlowThreshold + 1;
-    Compute.memory.autoMoveArm = true;
+    compute.memory.targetArmPosition = compute.armDownPosition;
+    input.armPosition = compute.armDownPosition + compute.armSlowThreshold + 1;
+    compute.memory.autoMoveArm = true;
     compute();
-    assertEquals(-Compute.armFast, output.armMotorPower);
+    assertEquals(-compute.armFast, output.armMotorPower);
   }
 
   @Test
   public void armDownSlow() {
-    Compute.memory.targetArmPosition = Compute.armDownPosition;
-    input.armPosition = Compute.armDownPosition + Compute.armSlowThreshold;
-    Compute.memory.autoMoveArm = true;
+    compute.memory.targetArmPosition = compute.armDownPosition;
+    input.armPosition = compute.armDownPosition + compute.armSlowThreshold;
+    compute.memory.autoMoveArm = true;
     compute();
-    assertEquals(-Compute.armSlow, output.armMotorPower);
+    assertEquals(-compute.armSlow, output.armMotorPower);
   }
 
   @Test
@@ -269,7 +267,7 @@ public class ComputeTest {
 
   @Test
   public void autoDriveForward() {
-    Compute.memory.targetMovePosition = 200;
+    compute.memory.targetMovePosition = 200;
     input.wheelPosition = 0;
     computeAuto();
     assertEquals(1f, output.movement.frontLeftPower);
@@ -279,8 +277,19 @@ public class ComputeTest {
   }
 
   @Test
+  public void autoDriveForwardMinimum() {
+    compute.memory.targetMovePosition = 1;
+    input.wheelPosition = 0;
+    computeAuto();
+    assertEquals(0.05f, output.movement.frontLeftPower);
+    assertEquals(0.05f, output.movement.frontRightPower);
+    assertEquals(0.05f, output.movement.rearLeftPower);
+    assertEquals(0.05f, output.movement.rearRightPower);
+  }
+
+  @Test
   public void autoDriveForwardSlow() {
-    Compute.memory.targetMovePosition = 200;
+    compute.memory.targetMovePosition = 200;
     input.wheelPosition = 150;
     computeAuto();
     assertEquals(0.5f, output.movement.frontLeftPower);
@@ -291,7 +300,7 @@ public class ComputeTest {
 
   @Test
   public void autoDriveBackward() {
-    Compute.memory.targetMovePosition = 200;
+    compute.memory.targetMovePosition = 200;
     input.wheelPosition = 400;
     computeAuto();
     assertEquals(-1f, output.movement.frontLeftPower);
@@ -302,9 +311,9 @@ public class ComputeTest {
 
   @Test
   public void autoDriveStop() {
-    Compute.memory.targetMovePosition = 200;
+    compute.memory.targetMovePosition = 200;
     input.wheelPosition = 200;
-    Compute.memory.currentStep = 99;
+    compute.memory.currentStep = 99;
     computeAuto();
     // the last argument specifying an allowable delta of 0
     // may seem like nonsense, but it tricks java into agreeing
@@ -317,39 +326,73 @@ public class ComputeTest {
 
   @Test
   public void noCurrentStep() {
-    assertEquals(0, Compute.memory.currentStep);
+    assertEquals(0, compute.memory.currentStep);
     computeAuto();
-    assertEquals(1, Compute.memory.currentStep);
+    assertEquals(1, compute.memory.currentStep);
   }
 
   @Test
   public void moveNotComplete() {
-    Compute.memory.currentStep = 1;
-    Compute.memory.targetMovePosition = 400;
+    compute.memory.currentStep = 1;
+    compute.memory.targetMovePosition = 400;
     input.wheelPosition = 200;
     computeAuto();
-    assertEquals(1, Compute.memory.currentStep);
+    assertEquals(1, compute.memory.currentStep);
   }
 
   @Test
   public void stepOneComplete() {
-    Compute.memory.currentStep = 1;
+    compute.memory.currentStep = 1;
     computeAuto();
-    assertEquals(2, Compute.memory.currentStep);
+    assertEquals(2, compute.memory.currentStep);
   }
 
   @Test
   public void stepOne() {
     input.wheelPosition = 0;
-    Compute.memory.targetMovePosition = 0;
-    Compute.runStep(1);
-    assertEquals(1000, Compute.memory.targetMovePosition);
+    compute.memory.targetMovePosition = 0;
+    compute.runStep(1);
+    assertEquals(1000, compute.memory.targetMovePosition);
   }
 
   @Test
   public void autoTurnLeft() {
-    Compute.memory.targetAngle = -90;
+    compute.memory.targetAngle = 90;
     input.yaw = 0;
+    computeAuto();
+    assertEquals(-0.5f, output.movement.frontLeftPower);
+    assertEquals(0.5f, output.movement.frontRightPower);
+    assertEquals(-0.5f, output.movement.rearLeftPower);
+    assertEquals(0.5f, output.movement.rearRightPower);
+  }
+
+//  @Test
+//  public void autoTurnLeftMinumum() {
+//    compute.memory.targetAngle = 1;
+//    input.yaw = 0;
+//    computeAuto();
+//    assertEquals(-0.05f, output.movement.frontLeftPower);
+//    assertEquals(0.05f, output.movement.frontRightPower);
+//    assertEquals(-0.05f, output.movement.rearLeftPower);
+//    assertEquals(0.05f, output.movement.rearRightPower);
+//  }
+//
+//  @Test
+//  public void autoTurnRightMinumum() {
+//    compute.memory.targetAngle = -1;
+//    input.yaw = 0;
+//    computeAuto();
+//    assertEquals(0.05f, output.movement.frontLeftPower);
+//    assertEquals(-0.05f, output.movement.frontRightPower);
+//    assertEquals(0.05f, output.movement.rearLeftPower);
+//    assertEquals(-0.05f, output.movement.rearRightPower);
+//  }
+
+
+  @Test
+  public void autoTurnLeftPast180() {
+    compute.memory.targetAngle = -160;
+    input.yaw = 160;
     computeAuto();
     assertEquals(-1f, output.movement.frontLeftPower);
     assertEquals(1f, output.movement.frontRightPower);
@@ -358,70 +401,70 @@ public class ComputeTest {
   }
 
   @Test
-  public void autoTurnPast180() {
-    Compute.memory.targetAngle = 160;
+  public void autoTurnRightPast180() {
+    compute.memory.targetAngle = 160;
     input.yaw = -160;
     computeAuto();
-    assertEquals(-1f, output.movement.frontLeftPower);
-    assertEquals(1f, output.movement.frontRightPower);
-    assertEquals(-1f, output.movement.rearLeftPower);
-    assertEquals(1f, output.movement.rearRightPower);
+    assertEquals(1f, output.movement.frontLeftPower);
+    assertEquals(-1f, output.movement.frontRightPower);
+    assertEquals(1f, output.movement.rearLeftPower);
+    assertEquals(-1f, output.movement.rearRightPower);
   }
 
   @Test
   public void turnNotComplete() {
-    Compute.memory.currentStep = 1;
-    Compute.memory.targetAngle = -90;
+    compute.memory.currentStep = 1;
+    compute.memory.targetAngle = -90;
     input.yaw = 0;
     computeAuto();
-    assertEquals(1, Compute.memory.currentStep);
+    assertEquals(1, compute.memory.currentStep);
   }
 
   @Test
   public void turnCloseEnoughToComplete() {
-    Compute.memory.currentStep = 1;
-    Compute.memory.targetAngle = -90;
+    compute.memory.currentStep = 1;
+    compute.memory.targetAngle = -90;
     input.yaw = -90.1;
     computeAuto();
-    assertEquals(2, Compute.memory.currentStep);
+    assertEquals(2, compute.memory.currentStep);
   }
 
   @Test
   public void turnLeftPast180() {
-    Compute.memory.targetAngle = -175;
-    Compute.turn(-10);
-    assertEquals(175, Compute.memory.targetAngle);
+    compute.memory.targetAngle = -175;
+    compute.turn(-10);
+    assertEquals(175, compute.memory.targetAngle);
   }
 
   @Test
   public void turnRightPast180() {
-    Compute.memory.targetAngle = 175;
-    Compute.turn(10);
-    assertEquals(-175, Compute.memory.targetAngle);
+    compute.memory.targetAngle = 175;
+    compute.turn(10);
+    assertEquals(-175, compute.memory.targetAngle);
   }
 
   @Test
   public void move() {
-    Compute.memory.targetMovePosition = 900;
-    Compute.move(100);
-    assertEquals(1000, Compute.memory.targetMovePosition);
+    compute.memory.targetMovePosition = 900;
+    compute.move(100);
+    assertEquals(1000, compute.memory.targetMovePosition);
   }
 
   @Test
   public void manualCloseTopClaw() {
-    Compute.memory.topClawPosition = 123d;
+    compute.memory.topClawPosition = 123d;
     input.leftBumper = true;
     compute();
-    assertEquals(0d, Compute.memory.topClawPosition);
+    assertEquals(0d, compute.memory.topClawPosition);
     assertEquals(0d, output.topClawPosition);
   }
 
   @Test
   public void manualCloseBottomClaw() {
-    Compute.memory.bottomClawPosition = 123d;
+    compute.memory.bottomClawPosition = 123d;
     input.leftTrigger = 0.1f;
     compute();
-    assertEquals(0d, Compute.memory.bottomClawPosition);
+    assertEquals(0d, compute.memory.bottomClawPosition);
     assertEquals(0d, output.bottomClawPosition);
   }
 
@@ -429,13 +472,13 @@ public class ComputeTest {
   public void manualOpenTopClaw() {
     input.rightBumper = true;
     compute();
-    assertEquals(1d, Compute.memory.topClawPosition);
+    assertEquals(1d, compute.memory.topClawPosition);
     assertEquals(1d, output.topClawPosition);
   }
 
   @Test
   public void manualKeepTopClawOpen() {
-    Compute.memory.topClawPosition = 1d;
+    compute.memory.topClawPosition = 1d;
     compute();
     assertEquals(1d, output.topClawPosition);
   }
@@ -444,13 +487,13 @@ public class ComputeTest {
   public void manualOpenBottomClaw() {
     input.rightTrigger = 0.1f;
     compute();
-    assertEquals(1d, Compute.memory.bottomClawPosition);
+    assertEquals(1d, compute.memory.bottomClawPosition);
     assertEquals(1d, output.bottomClawPosition);
   }
 
   @Test
   public void manualKeepBottomClawOpen() {
-    Compute.memory.bottomClawPosition = 1d;
+    compute.memory.bottomClawPosition = 1d;
     compute();
     assertEquals(1d, output.bottomClawPosition);
   }
@@ -462,43 +505,43 @@ public class ComputeTest {
     input.leftTrigger = 0.1f;
     input.rightTrigger = 0.1f;
     compute();
-    assertEquals(0d, Compute.memory.bottomClawPosition);
-    assertEquals(0d, Compute.memory.topClawPosition);
+    assertEquals(0d, compute.memory.bottomClawPosition);
+    assertEquals(0d, compute.memory.topClawPosition);
   }
 
   @Test
   public void autoCloseTopClaw() {
-    Compute.memory.topClawPosition = 0d;
+    compute.memory.topClawPosition = 0d;
     computeAuto();
     assertEquals(0d, output.topClawPosition);
   }
 
   @Test
   public void autoCloseBottomClaw() {
-    Compute.memory.bottomClawPosition = 0d;
+    compute.memory.bottomClawPosition = 0d;
     computeAuto();
     assertEquals(0d, output.bottomClawPosition);
   }
 
   @Test
   public void autoOpenTopClaw() {
-    Compute.memory.topClawPosition = 1d;
+    compute.memory.topClawPosition = 1d;
     computeAuto();
     assertEquals(1d, output.topClawPosition);
   }
 
   @Test
   public void autoOpenBottomClaw() {
-    Compute.memory.bottomClawPosition = 1d;
+    compute.memory.bottomClawPosition = 1d;
     computeAuto();
     assertEquals(1d, output.bottomClawPosition);
   }
 
   @Test
   public void autoArm() {
-    Compute.memory.targetArmPosition = Compute.armUpPosition;
-    input.armPosition = Compute.armUpPosition - Compute.armSlowThreshold - 1;
+    compute.memory.targetArmPosition = compute.armUpPosition;
+    input.armPosition = compute.armUpPosition - compute.armSlowThreshold - 1;
     computeAuto();
-    assertEquals(Compute.armFast, output.armMotorPower);
+    assertEquals(compute.armFast, output.armMotorPower);
   }
 }

@@ -18,6 +18,8 @@ public abstract class BaseOp2023 extends LinearOpMode {
   DcMotor rightFront = null;
   DcMotor leftBack = null;
   DcMotor rightBack = null;
+
+  Compute compute = new Compute();
   private DcMotor armMotor1 = null;
   private DcMotor armMotor2 = null;
   private DcMotor winchMotor = null;
@@ -52,9 +54,10 @@ public abstract class BaseOp2023 extends LinearOpMode {
 
     typeSpecificInit();
 
+    compute.memory = new Memory();
+
     telemetry.addData("Status", "Initialized");
     telemetry.update();
-    Compute.telemetry = telemetry;
 
     waitForStart();
     runtime.reset();
@@ -85,6 +88,7 @@ public abstract class BaseOp2023 extends LinearOpMode {
 
       Output output = compute(input);
 
+      output.telemetry.forEach((tele) -> telemetry.addData(tele.name, tele.value));
       telemetry.update();
 
       leftFront.setPower(output.movement.frontLeftPower);

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TeleOp2023 extends BaseOp2023 {
     @Override
     protected Output compute(Input input) {
-        return Compute.compute(input);
+        return compute.compute(input);
     }
 
     @Override
