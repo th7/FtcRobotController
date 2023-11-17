@@ -44,7 +44,7 @@ public abstract class BaseOp2023 extends LinearOpMode {
     armMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     winchMotor = hardwareMap.get(DcMotor.class, "WinchMotor");
-    winchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//    winchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     imu = hardwareMap.get(IMU.class, "IMU");
     imu.resetYaw();
