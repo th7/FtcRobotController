@@ -54,19 +54,19 @@ public class Compute {
     output.bottomClawPosition = memory.bottomClawPosition;
     output.armMotorPower = autoArmPower(input.armPosition);
 
-    if (inProgressTurn(input.yaw)) {
-      output.movement = autoTurn(input.yaw, memory.targetAngle);
-    } else {
-      output.movement = autoMove(input.wheelPosition, memory.targetMovePosition);
-    }
+//    if (inProgressTurn(input.yaw)) {
+//      output.movement = autoTurn(input.yaw, memory.targetAngle);
+//    } else {
+//      output.movement = autoMove(input.wheelPosition, memory.targetMovePosition);
+//    }
 
-//    Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle);
-//    Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
-//
-//    output.movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower);
-//    output.movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower);
-//    output.movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower);
-//    output.movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower);
+    Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle);
+    Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
+
+    output.movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower);
+    output.movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower);
+    output.movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower);
+    output.movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower);
 
     output.telemetry.add(new Output.Telemetry("targetMovePosition", memory.targetMovePosition));
     output.telemetry.add(new Output.Telemetry("wheelPosition", input.wheelPosition));
@@ -225,11 +225,11 @@ public class Compute {
 
   private float winch(boolean dPadRight, boolean dPadLeft) {
     if (dPadRight) {
-      return 0.25f;
+      return 1f;
     }
 
     if (dPadLeft) {
-      return -0.25f;
+      return -1f;
     }
 
     return 0f;
