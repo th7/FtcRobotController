@@ -14,6 +14,7 @@ public class Input {
   public boolean dPadRight = false;
   public boolean triangle = false;
   public boolean cross = false;
+  public boolean circle = false;
   public float rightTrigger = 0f;
   public float leftTrigger = 0f;
   public boolean rightBumper = false;

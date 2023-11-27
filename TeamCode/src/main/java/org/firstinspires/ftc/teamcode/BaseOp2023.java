@@ -26,6 +26,7 @@ public abstract class BaseOp2023 extends LinearOpMode {
   private IMU imu = null;
   private Servo topClaw = null;
   private Servo bottomClaw = null;
+  private Servo droneLauncher = null;
 
   @Override
   public void runOpMode() {
@@ -49,8 +50,13 @@ public abstract class BaseOp2023 extends LinearOpMode {
     imu = hardwareMap.get(IMU.class, "IMU");
     imu.resetYaw();
 
-//    topClaw = hardwareMap.get(Servo.class, "TopClaw");
-//    bottomClaw = hardwareMap.get(Servo.class, "BottomClaw");
+    topClaw = hardwareMap.get(Servo.class, "TopClaw");
+    bottomClaw = hardwareMap.get(Servo.class, "BottomClaw");
+
+    droneLauncher = hardwareMap.get(Servo.class, "DroneLaunch");
+
+    droneLauncher.setPosition(new Output().launcherPosition);
+    droneLauncher.setDirection(Servo.Direction.REVERSE);
 
     typeSpecificInit();
 
@@ -62,6 +68,7 @@ public abstract class BaseOp2023 extends LinearOpMode {
     waitForStart();
     runtime.reset();
 
+     // Check to see if the robot is enabled
     while (opModeIsActive()) {
       Input input = new Input();
 
@@ -76,6 +83,7 @@ public abstract class BaseOp2023 extends LinearOpMode {
       input.dPadRight = gamepad1.dpad_right;
       input.triangle = gamepad1.triangle;
       input.cross = gamepad1.cross;
+      input.circle = gamepad1.circle;
       input.rightTrigger = gamepad1.right_trigger;
       input.leftTrigger = gamepad1.left_trigger;
       input.rightBumper = gamepad1.right_bumper;
@@ -100,8 +108,10 @@ public abstract class BaseOp2023 extends LinearOpMode {
       armMotor2.setPower(output.armMotorPower);
       winchMotor.setPower(output.winchMotorPower);
 
-//      topClaw.setPosition((output.topClawPosition));
-//      bottomClaw.setPosition((output.bottomClawPosition));
+      topClaw.setPosition((output.topClawPosition));
+      bottomClaw.setPosition((output.bottomClawPosition));
+
+      droneLauncher.setPosition(output.launcherPosition);
     }
   }
 

@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.sun.tools.javac.util.Pair;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 public class Compute {
-  public final int armUpPosition = 140;
+  public final int armUpPosition = 50;
   public final int armDownPosition = 0;
   public final int armSlowThreshold = 25;
 
@@ -18,11 +14,15 @@ public class Compute {
 
     output.armMotorPower = arm(input.dPadUp, input.dPadDown, input.cross, input.triangle, input.armPosition);
     output.movement = manualDrive(input.gameStickRightX, input.gameStickLeftY, input.gameStickLeftX);
-    output.winchMotorPower = winch(input.dPadRight, input.dPadLeft);
+    output.winchMotorPower = winch(input.triangle, input.cross);
 
     manualClaw(input.leftBumper, input.rightBumper, input.leftTrigger, input.rightTrigger);
     output.topClawPosition = memory.topClawPosition;
     output.bottomClawPosition = memory.bottomClawPosition;
+
+    if (input.circle) {
+      output.launcherPosition = 0.7d;
+    }
 
     output.telemetry.add(new Output.Telemetry("gameStickLeftX", input.gameStickLeftX));
     output.telemetry.add(new Output.Telemetry("gameStickLeftY", input.gameStickLeftY));
@@ -33,6 +33,16 @@ public class Compute {
     output.telemetry.add(new Output.Telemetry("frontRightPower", output.movement.frontRightPower));
     output.telemetry.add(new Output.Telemetry("rearLeftPower", output.movement.rearLeftPower));
     output.telemetry.add(new Output.Telemetry("rearRightPower", output.movement.rearRightPower));
+
+    output.telemetry.add(new Output.Telemetry("circle", input.circle));
+    output.telemetry.add(new Output.Telemetry("launcherPosition", output.launcherPosition));
+
+    output.telemetry.add(new Output.Telemetry("leftTrigger", input.leftTrigger));
+    output.telemetry.add(new Output.Telemetry("rightTrigger", input.rightTrigger));
+    output.telemetry.add(new Output.Telemetry("leftBumper", input.leftBumper));
+    output.telemetry.add(new Output.Telemetry("rightBumper", input.rightBumper));
+    output.telemetry.add(new Output.Telemetry("topClawPosition", output.topClawPosition));
+    output.telemetry.add(new Output.Telemetry("bottomClawPosition", output.bottomClawPosition));
 
     return output;
   }
@@ -54,19 +64,17 @@ public class Compute {
     output.bottomClawPosition = memory.bottomClawPosition;
     output.armMotorPower = autoArmPower(input.armPosition);
 
-//    if (inProgressTurn(input.yaw)) {
-//      output.movement = autoTurn(input.yaw, memory.targetAngle);
-//    } else {
-//      output.movement = autoMove(input.wheelPosition, memory.targetMovePosition);
-//    }
+    if (memory.currentlyTurning) {
+      output.movement = autoTurn(input.yaw, memory.targetAngle);
+    } else {
+      Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle);
+      Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
 
-    Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle);
-    Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
-
-    output.movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower);
-    output.movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower);
-    output.movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower);
-    output.movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower);
+      output.movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower);
+      output.movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower);
+      output.movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower);
+      output.movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower);
+    }
 
     output.telemetry.add(new Output.Telemetry("targetMovePosition", memory.targetMovePosition));
     output.telemetry.add(new Output.Telemetry("wheelPosition", input.wheelPosition));
@@ -98,16 +106,16 @@ public class Compute {
 
   private void manualClaw(boolean leftBumper, boolean rightBumper, float leftTrigger, float rightTrigger) {
     if (rightBumper) {
-      memory.topClawPosition = 1d;
-    }
-    if (leftBumper) {
       memory.topClawPosition = 0d;
     }
-    if (rightTrigger != 0) {
-      memory.bottomClawPosition = 1d;
+    if (leftBumper) {
+      memory.topClawPosition = 0.25d;
     }
-    if (leftTrigger != 0) {
+    if (rightTrigger > 0) {
       memory.bottomClawPosition = 0d;
+    }
+    if (leftTrigger > 0) {
+      memory.bottomClawPosition = 0.25d;
     }
   }
 
@@ -186,15 +194,14 @@ public class Compute {
       return -0.25f;
     }
 
-    if (triangle) {
-      memory.autoMoveArm = true;
-      memory.targetArmPosition = armUpPosition;
-    }
-
-    if (cross) {
-      memory.autoMoveArm = true;
-      memory.targetArmPosition = armDownPosition;
-    }
+//    if (triangle) {
+//      memory.autoMoveArm = true;
+//      memory.targetArmPosition = armUpPosition;
+//    }
+//    if (cross) {
+//      memory.autoMoveArm = true;
+//      memory.targetArmPosition = armDownPosition;
+//    }
 
     if (!memory.autoMoveArm) {
       return 0f;
@@ -223,12 +230,12 @@ public class Compute {
     return 0f;
   }
 
-  private float winch(boolean dPadRight, boolean dPadLeft) {
-    if (dPadRight) {
+  private float winch(boolean triangle, boolean cross) {
+    if (triangle) {
       return 1f;
     }
 
-    if (dPadLeft) {
+    if (cross) {
       return -1f;
     }
 
@@ -262,14 +269,6 @@ public class Compute {
   public void runStep(int stepNumber) {
     switch(stepNumber) {
       case 1: step1(); break;
-      case 2: step2(); break;
-      case 3: step3(); break;
-      case 4: step4(); break;
-      case 5: step5(); break;
-      case 6: step6(); break;
-      case 7: step7(); break;
-      case 8: step8(); break;
-      case 9: step9(); break;
     }
     memory.currentStep = stepNumber;
   }
@@ -293,39 +292,7 @@ public class Compute {
   }
 
   public void step1() {
-    move(1000);
-  }
-
-  public void step2() {
-    turn(90);
-  }
-
-  public void step3() {
-    move(1000);
-  }
-
-  public void step4() {
-    turn(90);
-  }
-
-  public void step5() {
-    move(1000);
-  }
-
-  public void step6() {
-    turn(90);
-  }
-
-  public void step7() {
-    move(1000);
-  }
-
-  public void step8() {
-    turn(90);
-  }
-
-  public void step9() {
-    memory.targetArmPosition = armUpPosition;
+    move(2000);
   }
   public void turn(double turnAmount) {
     double targetAngle = memory.targetAngle + turnAmount;
@@ -337,10 +304,14 @@ public class Compute {
     } else {
       memory.targetAngle = targetAngle;
     }
+    memory.currentlyTurning = true;
+    memory.currentlyDriving = false;
   }
 
   public void move(int moveAmount) {
     memory.targetMovePosition += moveAmount;
+    memory.currentlyDriving = true;
+    memory.currentlyTurning = false;
   }
 
   // private float logistic(float offset) {

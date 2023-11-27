@@ -5,6 +5,7 @@ import com.sun.tools.javac.util.Pair;
 import java.util.ArrayList;
 
 public class Output {
+
   public static class Movement {
     public float frontLeftPower = 0f;
     public float frontRightPower = 0f;
@@ -27,6 +28,7 @@ public class Output {
 
   public double topClawPosition = 0d;
   public double bottomClawPosition = 0d;
+  public double launcherPosition = 0.2d;
 
   public ArrayList<Telemetry> telemetry = new ArrayList<>();
 }
