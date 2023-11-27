@@ -31,4 +31,8 @@ public class Output {
   public double launcherPosition = 0.2d;
 
   public ArrayList<Telemetry> telemetry = new ArrayList<>();
+
+  public void addTel(String name, Object value) {
+    telemetry.add(new Telemetry(name, value));
+  }
 }

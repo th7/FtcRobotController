@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class AutoOpTeamProp extends BaseOp2023 {
     @Override
     protected Output compute(Input input) {
-        return compute.computeAutonomous(input);
+        return compute.teamProp(input);
     }
 
     @Override

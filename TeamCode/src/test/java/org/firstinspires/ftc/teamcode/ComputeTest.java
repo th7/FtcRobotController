@@ -12,7 +12,7 @@ public class ComputeTest {
   Output output;
   Compute compute = new Compute();
 
-  public void compute() { output = compute.compute(input); }
+  public void compute() { output = compute.teleOp(input); }
 
   public void computeAuto() { output = compute.computeAutonomous(input); }
 

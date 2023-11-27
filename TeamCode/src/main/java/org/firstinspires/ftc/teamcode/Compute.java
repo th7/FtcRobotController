@@ -9,7 +9,7 @@ public class Compute {
   public final float armSlow = 0.05f;
 
   public Memory memory = new Memory();
-  public Output compute(Input input) {
+  public Output teleOp(Input input) {
     Output output = new Output();
 
     output.armMotorPower = arm(input.dPadUp, input.dPadDown, input.cross, input.triangle, input.armPosition);
@@ -24,41 +24,72 @@ public class Compute {
       output.launcherPosition = 0.7d;
     }
 
-    output.telemetry.add(new Output.Telemetry("gameStickLeftX", input.gameStickLeftX));
-    output.telemetry.add(new Output.Telemetry("gameStickLeftY", input.gameStickLeftY));
-    output.telemetry.add(new Output.Telemetry("gameStickRightX", input.gameStickRightX));
-    output.telemetry.add(new Output.Telemetry("gameStickRightY", input.gameStickRightY));
+    output.addTel("gameStickLeftX", input.gameStickLeftX);
+    output.addTel("gameStickLeftY", input.gameStickLeftY);
+    output.addTel("gameStickRightX", input.gameStickRightX);
+    output.addTel("gameStickRightY", input.gameStickRightY);
 
-    output.telemetry.add(new Output.Telemetry("frontLeftPower", output.movement.frontLeftPower));
-    output.telemetry.add(new Output.Telemetry("frontRightPower", output.movement.frontRightPower));
-    output.telemetry.add(new Output.Telemetry("rearLeftPower", output.movement.rearLeftPower));
-    output.telemetry.add(new Output.Telemetry("rearRightPower", output.movement.rearRightPower));
+    output.addTel("frontLeftPower", output.movement.frontLeftPower);
+    output.addTel("frontRightPower", output.movement.frontRightPower);
+    output.addTel("rearLeftPower", output.movement.rearLeftPower);
+    output.addTel("rearRightPower", output.movement.rearRightPower);
 
-    output.telemetry.add(new Output.Telemetry("circle", input.circle));
-    output.telemetry.add(new Output.Telemetry("launcherPosition", output.launcherPosition));
+    output.addTel("circle", input.circle);
+    output.addTel("launcherPosition", output.launcherPosition);
 
-    output.telemetry.add(new Output.Telemetry("leftTrigger", input.leftTrigger));
-    output.telemetry.add(new Output.Telemetry("rightTrigger", input.rightTrigger));
-    output.telemetry.add(new Output.Telemetry("leftBumper", input.leftBumper));
-    output.telemetry.add(new Output.Telemetry("rightBumper", input.rightBumper));
-    output.telemetry.add(new Output.Telemetry("topClawPosition", output.topClawPosition));
-    output.telemetry.add(new Output.Telemetry("bottomClawPosition", output.bottomClawPosition));
+    output.addTel("leftTrigger", input.leftTrigger);
+    output.addTel("rightTrigger", input.rightTrigger);
+    output.addTel("leftBumper", input.leftBumper);
+    output.addTel("rightBumper", input.rightBumper);
+    output.addTel("topClawPosition", output.topClawPosition);
+    output.addTel("bottomClawPosition", output.bottomClawPosition);
 
     return output;
   }
 
-  public Output computeAutonomous(Input input) {
+  public Output teamProp(Input input) {
+    return computeAutonomous2(input, this::runTeamPropStep);
+  }
+
+  public Output backstage(Input input) {
+    return computeAutonomous2(input, this::runBackstageStep);
+  }
+
+  interface StepCallback {
+    void call();
+  }
+  private void runTeamPropStep() {
+    switch(memory.currentStep + 1) {
+      case 1: teamPropStep1(); break;
+    }
+  }
+
+  private void teamPropStep1() {
+
+  }
+
+  private void runBackstageStep() {
+    switch(memory.currentStep + 1) {
+      case 1: backstageStep1(); break;
+    }
+  }
+
+  private void backstageStep1() {
+    move(2000);
+  }
+
+  public Output computeAutonomous2(Input input, StepCallback stepCallback) {
     Output output = new Output();
 
     if (!inProgress(input.wheelPosition, input.yaw)) {
-      runStep(memory.currentStep + 1);
-      output.telemetry.add(new Output.Telemetry("inProgress", false));
+      stepCallback.call();
+      memory.currentStep += 1;
+      output.addTel("inProgress", false);
     } else {
-      output.telemetry.add(new Output.Telemetry("inProgress", true));
+      output.addTel("inProgress", true);
     }
 
-    output.telemetry.add(new Output.Telemetry("currentStep", memory.currentStep));
-
+    output.addTel("currentStep", memory.currentStep);
 
     output.topClawPosition = memory.topClawPosition;
     output.bottomClawPosition = memory.bottomClawPosition;
@@ -76,16 +107,58 @@ public class Compute {
       output.movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower);
     }
 
-    output.telemetry.add(new Output.Telemetry("targetMovePosition", memory.targetMovePosition));
-    output.telemetry.add(new Output.Telemetry("wheelPosition", input.wheelPosition));
+    output.addTel("targetMovePosition", memory.targetMovePosition);
+    output.addTel("wheelPosition", input.wheelPosition);
 
-    output.telemetry.add(new Output.Telemetry("targetAngle", memory.targetAngle));
-    output.telemetry.add(new Output.Telemetry("yaw", input.yaw));
+    output.addTel("targetAngle", memory.targetAngle);
+    output.addTel("yaw", input.yaw);
 
-    output.telemetry.add(new Output.Telemetry("frontLeftPower", output.movement.frontLeftPower));
-    output.telemetry.add(new Output.Telemetry("frontRightPower", output.movement.frontRightPower));
-    output.telemetry.add(new Output.Telemetry("rearLeftPower", output.movement.rearLeftPower));
-    output.telemetry.add(new Output.Telemetry("rearRightPower", output.movement.rearRightPower));
+    output.addTel("frontLeftPower", output.movement.frontLeftPower);
+    output.addTel("frontRightPower", output.movement.frontRightPower);
+    output.addTel("rearLeftPower", output.movement.rearLeftPower);
+    output.addTel("rearRightPower", output.movement.rearRightPower);
+
+    return output;
+  }
+
+  public Output computeAutonomous(Input input) {
+    Output output = new Output();
+
+    if (!inProgress(input.wheelPosition, input.yaw)) {
+      runStep(memory.currentStep + 1);
+      output.addTel("inProgress", false);
+    } else {
+      output.addTel("inProgress", true);
+    }
+
+    output.addTel("currentStep", memory.currentStep);
+
+    output.topClawPosition = memory.topClawPosition;
+    output.bottomClawPosition = memory.bottomClawPosition;
+    output.armMotorPower = autoArmPower(input.armPosition);
+
+    if (memory.currentlyTurning) {
+      output.movement = autoTurn(input.yaw, memory.targetAngle);
+    } else {
+      Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle);
+      Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
+
+      output.movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower);
+      output.movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower);
+      output.movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower);
+      output.movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower);
+    }
+
+    output.addTel("targetMovePosition", memory.targetMovePosition);
+    output.addTel("wheelPosition", input.wheelPosition);
+
+    output.addTel("targetAngle", memory.targetAngle);
+    output.addTel("yaw", input.yaw);
+
+    output.addTel("frontLeftPower", output.movement.frontLeftPower);
+    output.addTel("frontRightPower", output.movement.frontRightPower);
+    output.addTel("rearLeftPower", output.movement.rearLeftPower);
+    output.addTel("rearRightPower", output.movement.rearRightPower);
 
     return output;
   }
