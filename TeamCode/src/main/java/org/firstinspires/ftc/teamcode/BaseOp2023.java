@@ -26,7 +26,7 @@ public abstract class BaseOp2023 extends LinearOpMode {
   private IMU imu = null;
   private Servo topClaw = null;
   private Servo bottomClaw = null;
-  private Servo droneLauncher = null;
+//  private Servo droneLauncher = null;
 
   @Override
   public void runOpMode() {
@@ -53,10 +53,10 @@ public abstract class BaseOp2023 extends LinearOpMode {
     topClaw = hardwareMap.get(Servo.class, "TopClaw");
     bottomClaw = hardwareMap.get(Servo.class, "BottomClaw");
 
-    droneLauncher = hardwareMap.get(Servo.class, "DroneLaunch");
-
-    droneLauncher.setPosition(new Output().launcherPosition);
-    droneLauncher.setDirection(Servo.Direction.REVERSE);
+//    droneLauncher = hardwareMap.get(Servo.class, "DroneLaunch");
+//
+//    droneLauncher.setPosition(new Output().launcherPosition);
+//    droneLauncher.setDirection(Servo.Direction.REVERSE);
 
     typeSpecificInit();
 
@@ -111,7 +111,7 @@ public abstract class BaseOp2023 extends LinearOpMode {
       topClaw.setPosition((output.topClawPosition));
       bottomClaw.setPosition((output.bottomClawPosition));
 
-      droneLauncher.setPosition(output.launcherPosition);
+//      droneLauncher.setPosition(output.launcherPosition);
     }
   }
 

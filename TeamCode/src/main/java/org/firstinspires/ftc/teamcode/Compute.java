@@ -12,7 +12,7 @@ public class Compute {
   public Output teleOp(Input input) {
     Output output = new Output();
 
-    output.armMotorPower = arm(input.dPadUp, input.dPadDown, input.cross, input.triangle, input.armPosition);
+    output.armMotorPower = arm(input.dPadUp, input.dPadDown, input.armPosition);
     output.movement = manualDrive(input.gameStickRightX, input.gameStickLeftY, input.gameStickLeftX);
     output.winchMotorPower = winch(input.triangle, input.cross);
 
@@ -48,11 +48,11 @@ public class Compute {
   }
 
   public Output teamProp(Input input) {
-    return computeAutonomous2(input, this::runTeamPropStep);
+    return computeAutonomous(input, this::runTeamPropStep);
   }
 
   public Output backstage(Input input) {
-    return computeAutonomous2(input, this::runBackstageStep);
+    return computeAutonomous(input, this::runBackstageStep);
   }
 
   interface StepCallback {
@@ -65,7 +65,7 @@ public class Compute {
   }
 
   private void teamPropStep1() {
-
+    turn(90);
   }
 
   private void runBackstageStep() {
@@ -78,54 +78,12 @@ public class Compute {
     move(2000);
   }
 
-  public Output computeAutonomous2(Input input, StepCallback stepCallback) {
+  private Output computeAutonomous(Input input, StepCallback stepCallback) {
     Output output = new Output();
 
     if (!inProgress(input.wheelPosition, input.yaw)) {
       stepCallback.call();
       memory.currentStep += 1;
-      output.addTel("inProgress", false);
-    } else {
-      output.addTel("inProgress", true);
-    }
-
-    output.addTel("currentStep", memory.currentStep);
-
-    output.topClawPosition = memory.topClawPosition;
-    output.bottomClawPosition = memory.bottomClawPosition;
-    output.armMotorPower = autoArmPower(input.armPosition);
-
-    if (memory.currentlyTurning) {
-      output.movement = autoTurn(input.yaw, memory.targetAngle);
-    } else {
-      Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle);
-      Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
-
-      output.movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower);
-      output.movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower);
-      output.movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower);
-      output.movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower);
-    }
-
-    output.addTel("targetMovePosition", memory.targetMovePosition);
-    output.addTel("wheelPosition", input.wheelPosition);
-
-    output.addTel("targetAngle", memory.targetAngle);
-    output.addTel("yaw", input.yaw);
-
-    output.addTel("frontLeftPower", output.movement.frontLeftPower);
-    output.addTel("frontRightPower", output.movement.frontRightPower);
-    output.addTel("rearLeftPower", output.movement.rearLeftPower);
-    output.addTel("rearRightPower", output.movement.rearRightPower);
-
-    return output;
-  }
-
-  public Output computeAutonomous(Input input) {
-    Output output = new Output();
-
-    if (!inProgress(input.wheelPosition, input.yaw)) {
-      runStep(memory.currentStep + 1);
       output.addTel("inProgress", false);
     } else {
       output.addTel("inProgress", true);
@@ -256,7 +214,7 @@ public class Compute {
     return movement;
   }
 
-  private float arm(boolean dPadUp, boolean dPadDown, boolean cross, boolean triangle, int armPosition) {
+  private float arm(boolean dPadUp, boolean dPadDown, int armPosition) {
     if (dPadUp) {
       memory.autoMoveArm = false;
       return 0.25f;

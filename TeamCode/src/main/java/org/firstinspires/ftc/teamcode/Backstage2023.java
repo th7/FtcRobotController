@@ -1,15 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.media.AudioManager;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name="AutoOp2023", group="Autonomous")
-public class AutoOp2023 extends BaseOp2023 {
+@Autonomous(name="Backstage2023", group="Autonomous")
+public class Backstage2023 extends BaseOp2023 {
     @Override
     protected Output compute(Input input) {
-        return compute.computeAutonomous(input);
+        return compute.backstage(input);
     }
 
     @Override

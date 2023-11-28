@@ -14,7 +14,7 @@ public class ComputeTest {
 
   public void compute() { output = compute.teleOp(input); }
 
-  public void computeAuto() { output = compute.computeAutonomous(input); }
+  public void computeAuto() { output = compute.backstage(input); }
 
   @BeforeEach
   public void beforeEach() { compute.memory = new Memory(); }
