@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @Autonomous(name="Backstage2023", group="Autonomous")
 public class Backstage2023 extends BaseOp2023 {
     @Override
-    protected Output compute(Input input) {
-        return compute.backstage(input);
+    protected Output compute(Compute compute) {
+        return compute.backstage();
     }
 
     @Override

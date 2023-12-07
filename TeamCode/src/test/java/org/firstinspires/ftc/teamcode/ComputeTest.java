@@ -9,16 +9,13 @@ import org.junit.jupiter.api.Test;
 
 public class ComputeTest {
   Input input = new Input();
+  Memory memory = new Memory();
   Output output;
-  Compute compute = new Compute();
+  Compute compute = new Compute(memory, input);
 
-  public void compute() { output = compute.teleOp(input); }
+  public void compute() { output = compute.teleOp(); }
 
-  public void computeAuto() { output = compute.backstage(input); }
-
-  @BeforeEach
-  public void beforeEach() { compute.memory = new Memory(); }
-
+  public void computeAuto() { output = compute.backstage(); }
   @Test
   public void defaults() {
     compute();

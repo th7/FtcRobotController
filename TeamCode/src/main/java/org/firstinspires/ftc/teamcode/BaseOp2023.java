@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @Disabled
@@ -19,7 +20,6 @@ public abstract class BaseOp2023 extends LinearOpMode {
   DcMotor leftBack = null;
   DcMotor rightBack = null;
 
-  Compute compute = new Compute();
   private DcMotor armMotor1 = null;
   private DcMotor armMotor2 = null;
   private DcMotor winchMotor = null;
@@ -60,7 +60,7 @@ public abstract class BaseOp2023 extends LinearOpMode {
 
     typeSpecificInit();
 
-    compute.memory = new Memory();
+    Memory memory = new Memory();
 
     telemetry.addData("Status", "Initialized");
     telemetry.update();
@@ -94,7 +94,8 @@ public abstract class BaseOp2023 extends LinearOpMode {
 
       input.yaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
-      Output output = compute(input);
+      Compute compute = new Compute(memory, input);
+      Output output = compute(compute);
 
       output.telemetry.forEach((tele) -> telemetry.addData(tele.name, tele.value));
       telemetry.update();
@@ -108,14 +109,14 @@ public abstract class BaseOp2023 extends LinearOpMode {
       armMotor2.setPower(output.armMotorPower);
       winchMotor.setPower(output.winchMotorPower);
 
-      topClaw.setPosition((output.topClawPosition));
-      bottomClaw.setPosition((output.bottomClawPosition));
+      topClaw.setPosition(output.topClawPosition);
+      bottomClaw.setPosition(output.bottomClawPosition);
 
 //      droneLauncher.setPosition(output.launcherPosition);
     }
   }
 
-  protected abstract Output compute(Input input);
+  protected abstract Output compute(Compute compute);
 
   protected abstract void typeSpecificInit();
 }

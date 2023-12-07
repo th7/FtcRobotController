@@ -8,8 +8,22 @@ public class Compute {
   public final float armFast = 0.1f;
   public final float armSlow = 0.05f;
 
-  public Memory memory = new Memory();
-  public Output teleOp(Input input) {
+  public final double clawOpen = 0.25d;
+  public final double clawClosed = 0d;
+
+  public final double oneTile = 1195d;
+
+  public final double turnRight = -90d;
+  public final double turnLeft = -turnRight;
+
+  public Memory memory;
+  public Input input;
+
+  Compute(Memory memory, Input input) {
+    this.memory = memory;
+    this.input = input;
+  }
+  public Output teleOp() {
     Output output = new Output();
 
     output.armMotorPower = arm(input.dPadUp, input.dPadDown, input.armPosition);
@@ -47,12 +61,12 @@ public class Compute {
     return output;
   }
 
-  public Output teamProp(Input input) {
-    return computeAutonomous(input, this::runTeamPropStep);
+  public Output teamProp() {
+    return computeAutonomous(this::runTeamPropStep);
   }
 
-  public Output backstage(Input input) {
-    return computeAutonomous(input, this::runBackstageStep);
+  public Output backstage() {
+    return computeAutonomous(this::runBackstageStep);
   }
 
   interface StepCallback {
@@ -61,24 +75,87 @@ public class Compute {
   private void runTeamPropStep() {
     switch(memory.currentStep + 1) {
       case 1: teamPropStep1(); break;
+      case 2: teamPropStep2(); break;
+      case 3: teamPropStep3(); break;
+      case 4: teamPropStep4(); break;
+      case 5: teamPropStep5(); break;
+      case 6: teamPropStep6(); break;
+      case 7: teamPropStep7(); break;
+      case 8: teamPropStep8(); break;
+      case 9: teamPropStep9(); break;
+      case 10: teamPropStep10(); break;
+      case 11: teamPropStep11(); break;
+      case 12: teamPropStep12(); break;
+      case 13: teamPropStep13(); break;
+      default: stop();
     }
   }
 
   private void teamPropStep1() {
-    turn(90);
+    memory.topClawPosition = clawClosed;
+  }
+
+  private void teamPropStep2() {
+    move(oneTile * 1.2);
+  }
+
+  private void teamPropStep3() {
+    memory.bottomClawPosition = clawOpen;
+  }
+
+  //wait step??
+
+  private void teamPropStep4() {
+     move(-oneTile);
+  }
+
+  private void teamPropStep5() {
+    turn(turnLeft);
+  }
+
+  private void teamPropStep6() {
+    move(oneTile * 0.8);
+  }
+
+  private void teamPropStep7() {
+    turn(turnRight);
+  }
+  private void teamPropStep8() {
+    move(oneTile * 2);
+  }
+
+  private void teamPropStep9() {
+    turn(turnRight);
+  }
+
+  private void teamPropStep10() {
+    move(oneTile * 4.7);
+  }
+
+  private void teamPropStep11() {
+    memory.topClawPosition = clawOpen;
+  }
+
+  private void teamPropStep12() {
+    move(-oneTile * 0.2);
+  }
+
+  private void teamPropStep13() {
+
   }
 
   private void runBackstageStep() {
     switch(memory.currentStep + 1) {
       case 1: backstageStep1(); break;
+      case 2: stop(); break;
     }
   }
 
   private void backstageStep1() {
-    move(2000);
+    move(oneTile * 2);
   }
 
-  private Output computeAutonomous(Input input, StepCallback stepCallback) {
+  private Output computeAutonomous(StepCallback stepCallback) {
     Output output = new Output();
 
     if (!inProgress(input.wheelPosition, input.yaw)) {
@@ -96,9 +173,9 @@ public class Compute {
     output.armMotorPower = autoArmPower(input.armPosition);
 
     if (memory.currentlyTurning) {
-      output.movement = autoTurn(input.yaw, memory.targetAngle);
-    } else {
-      Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle);
+      output.movement = autoTurn(input.yaw, memory.targetAngle, 1d);
+    } else if (memory.currentlyDriving) {
+      Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle, 5d);
       Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
 
       output.movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower);
@@ -137,16 +214,16 @@ public class Compute {
 
   private void manualClaw(boolean leftBumper, boolean rightBumper, float leftTrigger, float rightTrigger) {
     if (rightBumper) {
-      memory.topClawPosition = 0d;
+      memory.topClawPosition = clawClosed;
     }
     if (leftBumper) {
-      memory.topClawPosition = 0.25d;
+      memory.topClawPosition = clawOpen;
     }
     if (rightTrigger > 0) {
-      memory.bottomClawPosition = 0d;
+      memory.bottomClawPosition = clawClosed;
     }
     if (leftTrigger > 0) {
-      memory.bottomClawPosition = 0.25d;
+      memory.bottomClawPosition = clawOpen;
     }
   }
 
@@ -154,7 +231,7 @@ public class Compute {
     Output.Movement movement = new Output.Movement();
 
     int distanceToMove = targetMovePosition - wheelPosition;
-    float power = autoMinimum(clip(distanceToMove / 100f));
+    float power = autoMinimum(clip((float) distanceToMove / 100f));
 
     movement.frontLeftPower = power;
     movement.frontRightPower = power;
@@ -164,11 +241,11 @@ public class Compute {
     return movement;
   }
 
-  private Output.Movement autoTurn(double yaw, double targetAngle) {
+  private Output.Movement autoTurn(double yaw, double targetAngle, double gain) {
     Output.Movement movement = new Output.Movement();
 
     double distanceToTurn = targetAngle - yaw;
-    float power = autoMinimum(clip((float) (distanceToTurn / 180d)));
+    float power = autoMinimum(clip((float) (distanceToTurn * gain / 180d)));
 
     if (Math.abs(distanceToTurn) > 180) {
       movement.frontLeftPower = power;
@@ -305,6 +382,10 @@ public class Compute {
   }
 
   public boolean inProgress(int wheelPosition, double yaw) {
+    if (memory.currentlyTurning) {
+      return inProgressTurn(yaw);
+    }
+
     return inProgressMove(wheelPosition) || inProgressTurn(yaw);
   }
 
@@ -340,8 +421,17 @@ public class Compute {
   }
 
   public void move(int moveAmount) {
-    memory.targetMovePosition += moveAmount;
+    memory.targetMovePosition = input.wheelPosition + moveAmount;
     memory.currentlyDriving = true;
+    memory.currentlyTurning = false;
+  }
+
+  public void move(double moveAmount) {
+    move((int) moveAmount);
+  }
+
+  public void stop() {
+    memory.currentlyDriving = false;
     memory.currentlyTurning = false;
   }
 
