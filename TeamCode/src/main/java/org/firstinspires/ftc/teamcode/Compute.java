@@ -65,8 +65,12 @@ public class Compute {
     return computeAutonomous(this::runTeamPropStep);
   }
 
-  public Output backstage() {
-    return computeAutonomous(this::runBackstageStep);
+  public Output backstageRed() {
+    return computeAutonomous(this::runBackstageRedStep);
+  }
+
+  public Output backstageBlue() {
+    return computeAutonomous(this::runBackstageBlueStep);
   }
 
   interface StepCallback {
@@ -80,79 +84,91 @@ public class Compute {
       case 4: teamPropStep4(); break;
       case 5: teamPropStep5(); break;
       case 6: teamPropStep6(); break;
-      case 7: teamPropStep7(); break;
-      case 8: teamPropStep8(); break;
-      case 9: teamPropStep9(); break;
-      case 10: teamPropStep10(); break;
-      case 11: teamPropStep11(); break;
-      case 12: teamPropStep12(); break;
-      case 13: teamPropStep13(); break;
       default: stop();
     }
   }
 
   private void teamPropStep1() {
     memory.topClawPosition = clawClosed;
+    memory.bottomClawPosition = clawClosed;
   }
 
   private void teamPropStep2() {
-    move(oneTile * 1.2);
+    waitFor(2);
   }
 
   private void teamPropStep3() {
+    move(oneTile * 1.1);
+  }
+
+  private void teamPropStep4() {
     memory.bottomClawPosition = clawOpen;
   }
 
-  //wait step??
-
-  private void teamPropStep4() {
-     move(-oneTile);
-  }
-
   private void teamPropStep5() {
-    turn(turnLeft);
+    waitFor(2);
   }
 
   private void teamPropStep6() {
-    move(oneTile * 0.8);
+     move(-oneTile * 0.9);
   }
 
-  private void teamPropStep7() {
-    turn(turnRight);
-  }
-  private void teamPropStep8() {
-    move(oneTile * 2);
-  }
-
-  private void teamPropStep9() {
-    turn(turnRight);
-  }
-
-  private void teamPropStep10() {
-    move(oneTile * 4.7);
-  }
-
-  private void teamPropStep11() {
-    memory.topClawPosition = clawOpen;
-  }
-
-  private void teamPropStep12() {
-    move(-oneTile * 0.2);
-  }
-
-  private void teamPropStep13() {
-
-  }
-
-  private void runBackstageStep() {
+  private void runBackstageRedStep() {
     switch(memory.currentStep + 1) {
-      case 1: backstageStep1(); break;
-      case 2: stop(); break;
+      case 1: teamPropStep1(); break;
+      case 2: teamPropStep2(); break;
+      case 3: teamPropStep3(); break;
+      case 4: teamPropStep4(); break;
+      case 5: teamPropStep5(); break;
+      case 6: teamPropStep6(); break;
+      case 7: redBackstageStep7(); break;
+      case 8: backstageStep8(); break;
+      case 9: backstageStep9(); break;
+      case 10: backstageStep10(); break;
+      case 11: backstageStep11(); break;
+      default: stop(); break;
     }
   }
 
-  private void backstageStep1() {
-    move(oneTile * 2);
+  private void redBackstageStep7() {
+    turn(turnRight);
+  }
+
+  private void backstageStep8() {
+    move(oneTile * 1.8);
+  }
+
+  private void backstageStep9() {
+    memory.topClawPosition = clawOpen;
+  }
+
+  private void backstageStep10() {
+    waitFor(2);
+  }
+
+  private void backstageStep11() {
+    move(-oneTile * 0.2);
+  }
+
+  private void runBackstageBlueStep() {
+    switch(memory.currentStep + 1) {
+      case 1: teamPropStep1(); break;
+      case 2: teamPropStep2(); break;
+      case 3: teamPropStep3(); break;
+      case 4: teamPropStep4(); break;
+      case 5: teamPropStep5(); break;
+      case 6: teamPropStep6(); break;
+      case 7: blueBackstageStep7(); break;
+      case 8: backstageStep8(); break;
+      case 9: backstageStep9(); break;
+      case 10: backstageStep10(); break;
+      case 11: backstageStep11(); break;
+      default: stop(); break;
+    }
+  }
+
+  private void blueBackstageStep7() {
+    turn(turnLeft);
   }
 
   private Output computeAutonomous(StepCallback stepCallback) {
@@ -171,6 +187,10 @@ public class Compute {
     output.topClawPosition = memory.topClawPosition;
     output.bottomClawPosition = memory.bottomClawPosition;
     output.armMotorPower = autoArmPower(input.armPosition);
+
+    if (input.elapsedSeconds < memory.targetWaitSeconds) {
+      return output;
+    }
 
     if (memory.currentlyTurning) {
       output.movement = autoTurn(input.yaw, memory.targetAngle, 1d);
@@ -433,6 +453,10 @@ public class Compute {
   public void stop() {
     memory.currentlyDriving = false;
     memory.currentlyTurning = false;
+  }
+
+  public void waitFor(double waitSeconds) {
+    memory.targetWaitSeconds = input.elapsedSeconds + waitSeconds;
   }
 
   // private float logistic(float offset) {

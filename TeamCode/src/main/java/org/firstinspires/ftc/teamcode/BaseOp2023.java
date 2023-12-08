@@ -72,6 +72,8 @@ public abstract class BaseOp2023 extends LinearOpMode {
     while (opModeIsActive()) {
       Input input = new Input();
 
+      input.elapsedSeconds = runtime.seconds();
+
       input.gameStickLeftX = gamepad1.left_stick_x;
       input.gameStickLeftY = gamepad1.left_stick_y;
       input.gameStickRightX = gamepad1.right_stick_x;

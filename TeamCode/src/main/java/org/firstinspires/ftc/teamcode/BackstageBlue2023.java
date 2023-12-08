@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name="Backstage2023", group="Autonomous")
-public class Backstage2023 extends BaseOp2023 {
+@Autonomous(name="BackstageBlue2023", group="Autonomous")
+public class BackstageBlue2023 extends BaseOp2023 {
     @Override
     protected Output compute(Compute compute) {
-        return compute.backstage();
+        return compute.backstageBlue();
     }
 
     @Override

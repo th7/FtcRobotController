@@ -24,4 +24,5 @@ public class Input {
   public int armPosition = 0;
   public int wheelPosition = 0;
   public double yaw = 0d;
+  public double elapsedSeconds = 0;
 }

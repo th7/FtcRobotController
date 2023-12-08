@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ComputeTest {
@@ -15,7 +14,7 @@ public class ComputeTest {
 
   public void compute() { output = compute.teleOp(); }
 
-  public void computeAuto() { output = compute.backstage(); }
+  public void computeAuto() { output = compute.backstageRed(); }
   @Test
   public void defaults() {
     compute();
