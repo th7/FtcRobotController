@@ -16,6 +16,8 @@ public class Compute {
   public final double turnRight = -90d;
   public final double turnLeft = -turnRight;
 
+  public final double autoMinimumPower = 0.5d;
+
   public Memory memory;
   public Input input;
 
@@ -73,103 +75,156 @@ public class Compute {
     return computeAutonomous(this::runBackstageBlueStep);
   }
 
+  public Output frontstageBlue() {
+    return computeAutonomous(this::runFrontstageBlueStep);
+  }
+
+  public Output frontstageRed() {
+    return computeAutonomous(this::runFrontstageRedStep);
+  }
+
   interface StepCallback {
     void call();
   }
   private void runTeamPropStep() {
     switch(memory.currentStep + 1) {
-      case 1: teamPropStep1(); break;
-      case 2: teamPropStep2(); break;
-      case 3: teamPropStep3(); break;
-      case 4: teamPropStep4(); break;
-      case 5: teamPropStep5(); break;
-      case 6: teamPropStep6(); break;
+      case 1: openClaws(); break;
+      case 2: waitAfterClaws(); break;
+      case 3: moveToSpikeMark(); break;
+      case 4: openBottomClaw(); break;
+      case 5: waitAfterClaws(); break;
+      case 6: moveBackFromSpikeMarks(); break;
       default: stop();
     }
   }
 
-  private void teamPropStep1() {
+  private void openClaws() {
     memory.topClawPosition = clawClosed;
     memory.bottomClawPosition = clawClosed;
   }
 
-  private void teamPropStep2() {
-    waitFor(2);
+  private void waitAfterClaws() {
+    waitFor(0.6);
   }
 
-  private void teamPropStep3() {
-    move(oneTile * 1.1);
+  private void moveToSpikeMark() {
+    move(oneTile * 1.3);
   }
 
-  private void teamPropStep4() {
+  private void openBottomClaw() {
     memory.bottomClawPosition = clawOpen;
   }
 
-  private void teamPropStep5() {
-    waitFor(2);
-  }
-
-  private void teamPropStep6() {
+  private void moveBackFromSpikeMarks() {
      move(-oneTile * 0.9);
   }
 
   private void runBackstageRedStep() {
     switch(memory.currentStep + 1) {
-      case 1: teamPropStep1(); break;
-      case 2: teamPropStep2(); break;
-      case 3: teamPropStep3(); break;
-      case 4: teamPropStep4(); break;
-      case 5: teamPropStep5(); break;
-      case 6: teamPropStep6(); break;
-      case 7: redBackstageStep7(); break;
-      case 8: backstageStep8(); break;
-      case 9: backstageStep9(); break;
-      case 10: backstageStep10(); break;
-      case 11: backstageStep11(); break;
+      case 1: openClaws(); break;
+      case 2: waitAfterClaws(); break;
+      case 3: moveToSpikeMark(); break;
+      case 4: openBottomClaw(); break;
+      case 5: waitAfterClaws(); break;
+      case 6: moveBackFromSpikeMarks(); break;
+      case 7: turn(turnRight); break;
+      case 8: toBackstageShort(); break;
+      case 9: openTopClaw(); break;
+      case 10: waitAfterClaws(); break;
+      case 11: nudgeBack(); break;
       default: stop(); break;
     }
   }
 
-  private void redBackstageStep7() {
-    turn(turnRight);
-  }
-
-  private void backstageStep8() {
+  private void toBackstageShort() {
     move(oneTile * 1.8);
   }
 
-  private void backstageStep9() {
+  private void openTopClaw() {
     memory.topClawPosition = clawOpen;
   }
 
-  private void backstageStep10() {
-    waitFor(2);
-  }
-
-  private void backstageStep11() {
+  private void nudgeBack() {
     move(-oneTile * 0.2);
   }
 
   private void runBackstageBlueStep() {
     switch(memory.currentStep + 1) {
-      case 1: teamPropStep1(); break;
-      case 2: teamPropStep2(); break;
-      case 3: teamPropStep3(); break;
-      case 4: teamPropStep4(); break;
-      case 5: teamPropStep5(); break;
-      case 6: teamPropStep6(); break;
-      case 7: blueBackstageStep7(); break;
-      case 8: backstageStep8(); break;
-      case 9: backstageStep9(); break;
-      case 10: backstageStep10(); break;
-      case 11: backstageStep11(); break;
+      case 1: openClaws(); break;
+      case 2: waitAfterClaws(); break;
+      case 3: moveToSpikeMark(); break;
+      case 4: openBottomClaw(); break;
+      case 5: waitAfterClaws(); break;
+      case 6: moveBackFromSpikeMarks(); break;
+      case 7: turn(turnLeft); break;
+      case 8: toBackstageShort(); break;
+      case 9: openTopClaw(); break;
+      case 10: waitAfterClaws(); break;
+      case 11: nudgeBack(); break;
       default: stop(); break;
     }
   }
 
-  private void blueBackstageStep7() {
-    turn(turnLeft);
+  private void runFrontstageBlueStep() {
+    switch(memory.currentStep + 1) {
+      case 1: openClaws(); break;
+      case 2: waitAfterClaws(); break;
+      case 3: moveToSpikeMark(); break;
+      case 4: openBottomClaw(); break;
+      case 5: waitAfterClaws(); break;
+      case 6: moveBackFromSpikeMarks(); break;
+      case 7: turn(turnRight); break;
+      case 8: moveToWing(); break;
+      case 9: turn(turnLeft); break;
+      case 10: wingToMiddle(); break;
+      case 11: turn(45); break;
+      case 12: moveToMiddle(); break;
+      case 13: turn(45); break;
+      case 14: moveBackstageLong(); break;
+      case 15: openTopClaw(); break;
+      case 16: nudgeBack(); break;
+      default: stop();
+    }
   }
+
+  private void moveToWing() {
+    move(oneTile * 0.8);
+  }
+
+  private void wingToMiddle() {
+    move(oneTile * 1.7);
+  }
+
+  private void moveToMiddle() {
+    move(oneTile * 0.8);
+  }
+
+  private void moveBackstageLong() {
+    move(oneTile * 4);
+  }
+
+  private void runFrontstageRedStep() {
+    switch(memory.currentStep + 1) {
+      case 1: openClaws(); break;
+      case 2: waitAfterClaws(); break;
+      case 3: moveToSpikeMark(); break;
+      case 4: openBottomClaw(); break;
+      case 5: waitAfterClaws(); break;
+      case 6: moveBackFromSpikeMarks(); break;
+      case 7: turn(turnLeft); break;
+      case 8: moveToWing(); break;
+      case 9: turn(turnRight); break;
+      case 10: wingToMiddle(); break;
+      case 11: turn(-45); break;
+      case 12: moveToMiddle(); break;
+      case 13: turn(-45); break;
+      case 14: moveBackstageLong(); break;
+      case 15: openTopClaw(); break;
+      case 16: nudgeBack(); break;
+      default: stop();
+    }
+  }
+
 
   private Output computeAutonomous(StepCallback stepCallback) {
     Output output = new Output();
@@ -251,7 +306,7 @@ public class Compute {
     Output.Movement movement = new Output.Movement();
 
     int distanceToMove = targetMovePosition - wheelPosition;
-    float power = autoMinimum(clip((float) distanceToMove / 100f));
+    float power = autoMinimum(autoClip((float) distanceToMove / 200f));
 
     movement.frontLeftPower = power;
     movement.frontRightPower = power;
@@ -265,7 +320,7 @@ public class Compute {
     Output.Movement movement = new Output.Movement();
 
     double distanceToTurn = targetAngle - yaw;
-    float power = autoMinimum(clip((float) (distanceToTurn * gain / 180d)));
+    float power = autoMinimum(autoClip((float) (distanceToTurn * gain / 90d)));
 
     if (Math.abs(distanceToTurn) > 180) {
       movement.frontLeftPower = power;
@@ -382,6 +437,18 @@ public class Compute {
     return unclipped;
   }
 
+  private float autoClip(float unclipped) {
+    if (unclipped < -0.6f) {
+      return -0.6f;
+    }
+
+    if (unclipped > 0.6f) {
+      return 0.6f;
+    }
+
+    return unclipped;
+  }
+
   private float autoMinimum(float power) {
     if (-0.05 < power && power < 0) {
       return -0.05f;
@@ -410,17 +477,22 @@ public class Compute {
   }
 
   public boolean inProgressMove(int wheelPosition) {
-    return memory.targetMovePosition != wheelPosition;
+    return !moveCloseEnough(memory.targetMovePosition, wheelPosition);
   }
 
   public boolean inProgressTurn(double yaw) {
-    return !closeEnough(memory.targetAngle, yaw);
+    return !turnCloseEnough(memory.targetAngle, yaw);
   }
 
 
-  public boolean closeEnough(double a, double b) {
+  public boolean turnCloseEnough(double a, double b) {
     double difference = Math.abs(a - b);
     return difference <= 1;
+  }
+
+  public boolean moveCloseEnough(double a, double b) {
+    double difference = Math.abs(a -b);
+    return difference <= 8;
   }
 
   public void step1() {

@@ -28,7 +28,7 @@ public class Output {
 
   public double topClawPosition = 0d;
   public double bottomClawPosition = 0d;
-  public double launcherPosition = 0.2d;
+  public double launcherPosition = 0.4d;
 
   public ArrayList<Telemetry> telemetry = new ArrayList<>();
 
