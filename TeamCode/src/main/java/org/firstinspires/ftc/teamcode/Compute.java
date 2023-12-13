@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import org.firstinspires.ftc.teamcode.state.utils.Stateful;
+import org.firstinspires.ftc.teamcode.state.utils.State;
+import org.firstinspires.ftc.teamcode.state.utils.LinearStateMachine;
+
 public class Compute {
   public final int armUpPosition = 50;
   public final int armDownPosition = 0;
@@ -21,9 +25,56 @@ public class Compute {
   public Memory memory;
   public Input input;
 
+  public Stateful stateMachine;
+
   Compute(Memory memory, Input input) {
     this.memory = memory;
     this.input = input;
+  }
+
+  private Output derpComputeAutonomous() {
+    // compute needs statemachine setup
+    Output output = new Output();
+
+    if (stateMachine.done()) {
+      output.addTel("done", true);
+      return output;
+    }
+
+    output.topClawPosition = memory.topClawPosition;
+    output.bottomClawPosition = memory.bottomClawPosition;
+    output.armMotorPower = autoArmPower(input.armPosition);
+    output.movement = stateMachine.movement();
+
+    output.addTel("targetMovePosition", memory.targetMovePosition);
+    output.addTel("wheelPosition", input.wheelPosition);
+
+    output.addTel("targetAngle", memory.targetAngle);
+    output.addTel("yaw", input.yaw);
+
+    output.addTel("frontLeftPower", output.movement.frontLeftPower);
+    output.addTel("frontRightPower", output.movement.frontRightPower);
+    output.addTel("rearLeftPower", output.movement.rearLeftPower);
+    output.addTel("rearRightPower", output.movement.rearRightPower);
+
+    return output;
+  }
+
+  private Output.Movement turnMovement() {
+    return autoTurn(input.yaw, memory.targetAngle, 1d);
+  }
+
+  private Output.Movement driveMovement() {
+    Output.Movement movement = new Output.Movement();
+    Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle, 5d);
+    Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
+
+    movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower);
+    movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower);
+    movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower);
+    movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower);
+
+    return movement;
   }
   public Output teleOp() {
     Output output = new Output();
@@ -67,6 +118,129 @@ public class Compute {
     return computeAutonomous(this::runTeamPropStep);
   }
 
+  public LinearStateMachine derpTeamCode() {
+    return new LinearStateMachine(
+            derpCloseClaws(),
+            derpMoveToSpikeMarks(),
+            derpMoveBackFromSpikeMarks(),
+            derpOpenBottomClaw(),
+            derpMoveBackFromSpikeMarks()
+    );
+  }
+
+  public LinearStateMachine derpBackStageRed() {
+    return derpBackstage(turnRight);
+  }
+
+  public LinearStateMachine derpBackStageBlue() {
+    return derpBackstage(turnLeft);
+  }
+
+  public LinearStateMachine derpBackstage(double turn) {
+    return new LinearStateMachine(
+            derpTeamCode(),
+
+            derpTurn(turn),
+            derpToBackStageShort(),
+            derpOpenTopClaw(),
+            derpNudgeBack()
+    );
+  }
+
+  public LinearStateMachine derpFrontStageRed() {
+    return derpFrontStage(1);
+  }
+
+  public LinearStateMachine derpFrontStageBlue() {
+    return derpFrontStage(-1);
+  }
+
+  public LinearStateMachine derpFrontStage(int turnDirection) {
+    return new LinearStateMachine(
+            derpTeamCode(),
+
+            derpTurn(-90 * turnDirection),
+            derpMoveToWing(),
+            derpTurn(90 * turnDirection),
+            derpWingToMiddle(),
+            derpTurn(45 * turnDirection),
+            derpMoveToMiddle(),
+            derpTurn(45 * turnDirection),
+            derpMoveBackStageLong(),
+            derpOpenTopClaw(),
+            derpNudgeBack()
+    );
+  }
+
+  private Stateful derpMoveBackStageLong() {
+    return derpMove(oneTile * 4);
+  }
+
+  private Stateful derpMoveToMiddle() {
+    return derpMove(oneTile * 0.8);
+  }
+
+  private Stateful derpWingToMiddle() {
+    return derpMove(oneTile * 1.7);
+  }
+
+  private Stateful derpMoveToWing() {
+    return derpMove(oneTile * 0.8);
+  }
+
+  private Stateful derpNudgeBack() {
+    return derpMove(-oneTile * 0.2);
+  }
+
+  private Stateful derpOpenTopClaw() {
+    return new State(
+            () -> { openTopClaw(); waitFor(0.6); },
+            () -> input.elapsedSeconds > memory.targetWaitSeconds
+    );
+  }
+
+  private Stateful derpToBackStageShort() {
+    return derpMove(oneTile * 1.8);
+  }
+
+  private State derpMoveBackFromSpikeMarks() {
+    return derpMove(-oneTile * 0.9);
+  }
+
+  private State derpOpenBottomClaw() {
+    return new State(
+            () -> { openBottomClaw(); waitFor(0.6); },
+            () -> input.elapsedSeconds > memory.targetWaitSeconds
+    );
+  }
+
+  private State derpMoveToSpikeMarks() {
+    return derpMove(oneTile * 1.3);
+  }
+
+  public State derpMove(double distance) {
+    return new State(
+            () -> move(distance),
+            () -> driveMovement(),
+            () -> !inProgressMove(input.wheelPosition)
+    );
+  }
+
+  public State derpTurn(double angle) {
+    return new State(
+            () -> turn(angle),
+            () -> turnMovement(),
+            () -> !inProgressTurn(input.yaw)
+    );
+  }
+
+  public State derpCloseClaws() {
+    return new State(
+            () -> { closeClaws(); waitFor(0.6); },
+            () -> input.elapsedSeconds > memory.targetWaitSeconds
+    );
+  }
+
   public Output backstageRed() {
     return computeAutonomous(this::runBackstageRedStep);
   }
@@ -88,7 +262,7 @@ public class Compute {
   }
   private void runTeamPropStep() {
     switch(memory.currentStep + 1) {
-      case 1: openClaws(); break;
+      case 1: closeClaws(); break;
       case 2: waitAfterClaws(); break;
       case 3: moveToSpikeMark(); break;
       case 4: openBottomClaw(); break;
@@ -98,7 +272,7 @@ public class Compute {
     }
   }
 
-  private void openClaws() {
+  private void closeClaws() {
     memory.topClawPosition = clawClosed;
     memory.bottomClawPosition = clawClosed;
   }
@@ -121,7 +295,7 @@ public class Compute {
 
   private void runBackstageRedStep() {
     switch(memory.currentStep + 1) {
-      case 1: openClaws(); break;
+      case 1: closeClaws(); break;
       case 2: waitAfterClaws(); break;
       case 3: moveToSpikeMark(); break;
       case 4: openBottomClaw(); break;
@@ -150,7 +324,7 @@ public class Compute {
 
   private void runBackstageBlueStep() {
     switch(memory.currentStep + 1) {
-      case 1: openClaws(); break;
+      case 1: closeClaws(); break;
       case 2: waitAfterClaws(); break;
       case 3: moveToSpikeMark(); break;
       case 4: openBottomClaw(); break;
@@ -167,7 +341,7 @@ public class Compute {
 
   private void runFrontstageBlueStep() {
     switch(memory.currentStep + 1) {
-      case 1: openClaws(); break;
+      case 1: closeClaws(); break;
       case 2: waitAfterClaws(); break;
       case 3: moveToSpikeMark(); break;
       case 4: openBottomClaw(); break;
@@ -205,7 +379,7 @@ public class Compute {
 
   private void runFrontstageRedStep() {
     switch(memory.currentStep + 1) {
-      case 1: openClaws(); break;
+      case 1: closeClaws(); break;
       case 2: waitAfterClaws(); break;
       case 3: moveToSpikeMark(); break;
       case 4: openBottomClaw(); break;
