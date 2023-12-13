@@ -9,11 +9,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.state.utils.Stateful;
 
 @Disabled
 @TeleOp(name="BaseOp2023", group="Linear Opmode")
 public abstract class BaseOp2023 extends LinearOpMode {
   Memory memory = new Memory();
+  Stateful stateMachine;
   private final ElapsedTime runtime = new ElapsedTime();
   DcMotor leftFront = null;
   DcMotor rightFront = null;
@@ -27,11 +29,13 @@ public abstract class BaseOp2023 extends LinearOpMode {
   private Servo topClaw = null;
   private Servo bottomClaw = null;
   private Servo droneLauncher = null;
+  Compute compute = new Compute(memory);
 
   @Override
   public void runOpMode() {
     baseOpInit();
     typeSpecificInit();
+    setupCompute();
     waitForStart();
     runtime.reset();
     while (opModeIsActive()) { tick(); }
@@ -67,8 +71,7 @@ public abstract class BaseOp2023 extends LinearOpMode {
   }
 
   private void tick() {
-    Input input = collectInputs();
-    Compute compute = new Compute(memory, input);
+    compute.input = collectInputs();
     Output output = compute(compute);
     setOutputs(output);
   }
@@ -122,6 +125,8 @@ public abstract class BaseOp2023 extends LinearOpMode {
     droneLauncher.setPosition(output.launcherPosition);
   }
   protected abstract Output compute(Compute compute);
+
+  protected abstract void setupCompute();
 
   protected abstract void typeSpecificInit();
 }

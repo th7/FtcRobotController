@@ -27,13 +27,11 @@ public class Compute {
 
   public Stateful stateMachine;
 
-  Compute(Memory memory, Input input) {
+  Compute(Memory memory) {
     this.memory = memory;
-    this.input = input;
   }
 
-  private Output derpComputeAutonomous() {
-    // compute needs statemachine setup
+  Output derpComputeAutonomous() {
     Output output = new Output();
 
     if (stateMachine.done()) {

@@ -4,17 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ComputeTest {
   Input input = new Input();
   Memory memory = new Memory();
   Output output;
-  Compute compute = new Compute(memory, input);
+  Compute compute = new Compute(memory);
 
   public void compute() { output = compute.teleOp(); }
 
   public void computeAuto() { output = compute.backstageRed(); }
+  @BeforeEach
+  public void setup() { compute.input = input; }
   @Test
   public void defaults() {
     compute();

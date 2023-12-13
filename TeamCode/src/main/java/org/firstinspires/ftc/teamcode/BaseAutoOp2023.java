@@ -4,7 +4,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public abstract class BaseAutoOp2023 extends BaseOp2023 {
     @Override
-    protected abstract Output compute(Compute compute);
+    protected Output compute(Compute compute) {
+        return compute.derpComputeAutonomous();
+    }
 
     @Override
     protected void typeSpecificInit() {
