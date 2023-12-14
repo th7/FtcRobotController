@@ -15,7 +15,7 @@ public class ComputeTest {
 
   public void compute() { output = compute.teleOp(); }
 
-  public void computeAuto() { output = compute.backstageRed(); }
+  public void computeAuto() { output = compute.computeAutonomous(); }
   @BeforeEach
   public void setup() { compute.input = input; }
   @Test
@@ -347,14 +347,6 @@ public class ComputeTest {
   }
 
   @Test
-  public void stepOne() {
-    input.wheelPosition = 0;
-    compute.memory.targetMovePosition = 0;
-    compute.runStep(1);
-    assertEquals(1000, compute.memory.targetMovePosition);
-  }
-
-  @Test
   public void autoTurnLeft() {
     compute.memory.targetAngle = 90;
     input.yaw = 0;
@@ -365,28 +357,27 @@ public class ComputeTest {
     assertEquals(0.5f, output.movement.rearRightPower);
   }
 
-//  @Test
-//  public void autoTurnLeftMinumum() {
-//    compute.memory.targetAngle = 1;
-//    input.yaw = 0;
-//    computeAuto();
-//    assertEquals(-0.05f, output.movement.frontLeftPower);
-//    assertEquals(0.05f, output.movement.frontRightPower);
-//    assertEquals(-0.05f, output.movement.rearLeftPower);
-//    assertEquals(0.05f, output.movement.rearRightPower);
-//  }
-//
-//  @Test
-//  public void autoTurnRightMinumum() {
-//    compute.memory.targetAngle = -1;
-//    input.yaw = 0;
-//    computeAuto();
-//    assertEquals(0.05f, output.movement.frontLeftPower);
-//    assertEquals(-0.05f, output.movement.frontRightPower);
-//    assertEquals(0.05f, output.movement.rearLeftPower);
-//    assertEquals(-0.05f, output.movement.rearRightPower);
-//  }
+  @Test
+  public void autoTurnLeftMinumum() {
+    compute.memory.targetAngle = 1;
+    input.yaw = 0;
+    computeAuto();
+    assertEquals(-0.05f, output.movement.frontLeftPower);
+    assertEquals(0.05f, output.movement.frontRightPower);
+    assertEquals(-0.05f, output.movement.rearLeftPower);
+    assertEquals(0.05f, output.movement.rearRightPower);
+  }
 
+  @Test
+  public void autoTurnRightMinumum() {
+    compute.memory.targetAngle = -1;
+    input.yaw = 0;
+    computeAuto();
+    assertEquals(0.05f, output.movement.frontLeftPower);
+    assertEquals(-0.05f, output.movement.frontRightPower);
+    assertEquals(0.05f, output.movement.rearLeftPower);
+    assertEquals(-0.05f, output.movement.rearRightPower);
+  }
 
   @Test
   public void autoTurnLeftPast180() {

@@ -9,6 +9,4 @@ public class Memory {
   public int currentStep = 0;
   public double topClawPosition = 0d;
   public double bottomClawPosition = 0d;
-  public boolean currentlyDriving = false;
-  public boolean currentlyTurning = false;
 }

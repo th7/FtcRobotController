@@ -6,6 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class FrontStageRed2023 extends BaseAutoOp2023 {
     @Override
     protected void setupCompute() {
-        compute.stateMachine = compute.derpFrontStageRed();
+        compute.stateMachine = compute.frontStageRed();
     }
 }

@@ -20,18 +20,15 @@ public class Compute {
   public final double turnRight = -90d;
   public final double turnLeft = -turnRight;
 
-  public final double autoMinimumPower = 0.5d;
-
-  public Memory memory;
-  public Input input;
-
+  public final Memory memory;
   public Stateful stateMachine;
+  public Input input;
 
   Compute(Memory memory) {
     this.memory = memory;
   }
 
-  Output derpComputeAutonomous() {
+  Output computeAutonomous() {
     Output output = new Output();
 
     if (stateMachine.done()) {
@@ -112,162 +109,127 @@ public class Compute {
     return output;
   }
 
-  public Output teamProp() {
-    return computeAutonomous(this::runTeamPropStep);
-  }
-
-  public LinearStateMachine derpTeamCode() {
+  public LinearStateMachine teamProp() {
     return new LinearStateMachine(
-            derpCloseClaws(),
-            derpMoveToSpikeMarks(),
-            derpMoveBackFromSpikeMarks(),
-            derpOpenBottomClaw(),
-            derpMoveBackFromSpikeMarks()
+            closeClawsState(),
+            moveToSpikeMarks(),
+            moveBackFromSpikeMarks(),
+            openBottomClawState(),
+            moveBackFromSpikeMarks()
     );
   }
 
-  public LinearStateMachine derpBackStageRed() {
-    return derpBackstage(turnRight);
+  public LinearStateMachine backStageRed() {
+    return backstage(turnRight);
   }
 
-  public LinearStateMachine derpBackStageBlue() {
-    return derpBackstage(turnLeft);
+  public LinearStateMachine backStageBlue() {
+    return backstage(turnLeft);
   }
 
-  public LinearStateMachine derpBackstage(double turn) {
+  public LinearStateMachine backstage(double turn) {
     return new LinearStateMachine(
-            derpTeamCode(),
+            teamProp(),
 
-            derpTurn(turn),
-            derpToBackStageShort(),
-            derpOpenTopClaw(),
-            derpNudgeBack()
+            turnState(turn),
+            toBackStageShort(),
+            openTopClawState(),
+            nudgeBack()
     );
   }
 
-  public LinearStateMachine derpFrontStageRed() {
-    return derpFrontStage(1);
+  public LinearStateMachine frontStageRed() {
+    return frontStage(1);
   }
 
-  public LinearStateMachine derpFrontStageBlue() {
-    return derpFrontStage(-1);
+  public LinearStateMachine frontStageBlue() {
+    return frontStage(-1);
   }
 
-  public LinearStateMachine derpFrontStage(int turnDirection) {
+  public LinearStateMachine frontStage(int turnDirection) {
     return new LinearStateMachine(
-            derpTeamCode(),
+            teamProp(),
 
-            derpTurn(-90 * turnDirection),
-            derpMoveToWing(),
-            derpTurn(90 * turnDirection),
-            derpWingToMiddle(),
-            derpTurn(45 * turnDirection),
-            derpMoveToMiddle(),
-            derpTurn(45 * turnDirection),
-            derpMoveBackStageLong(),
-            derpOpenTopClaw(),
-            derpNudgeBack()
+            turnState(-90 * turnDirection),
+            moveToWing(),
+            turnState(90 * turnDirection),
+            wingToMiddle(),
+            turnState(45 * turnDirection),
+            moveToMiddle(),
+            turnState(45 * turnDirection),
+            moveBackStageLong(),
+            openTopClawState(),
+            nudgeBack()
     );
   }
 
-  private Stateful derpMoveBackStageLong() {
-    return derpMove(oneTile * 4);
+  private Stateful moveBackStageLong() {
+    return moveState(oneTile * 4);
   }
 
-  private Stateful derpMoveToMiddle() {
-    return derpMove(oneTile * 0.8);
+  private Stateful moveToMiddle() {
+    return moveState(oneTile * 0.8);
   }
 
-  private Stateful derpWingToMiddle() {
-    return derpMove(oneTile * 1.7);
+  private Stateful wingToMiddle() {
+    return moveState(oneTile * 1.7);
   }
 
-  private Stateful derpMoveToWing() {
-    return derpMove(oneTile * 0.8);
+  private Stateful moveToWing() {
+    return moveState(oneTile * 0.8);
   }
 
-  private Stateful derpNudgeBack() {
-    return derpMove(-oneTile * 0.2);
+  private Stateful nudgeBack() {
+    return moveState(-oneTile * 0.2);
   }
 
-  private Stateful derpOpenTopClaw() {
+  private Stateful openTopClawState() {
     return new State(
             () -> { openTopClaw(); waitFor(0.6); },
             () -> input.elapsedSeconds > memory.targetWaitSeconds
     );
   }
 
-  private Stateful derpToBackStageShort() {
-    return derpMove(oneTile * 1.8);
+  private Stateful toBackStageShort() {
+    return moveState(oneTile * 1.8);
   }
 
-  private State derpMoveBackFromSpikeMarks() {
-    return derpMove(-oneTile * 0.9);
+  private State moveBackFromSpikeMarks() {
+    return moveState(-oneTile * 0.9);
   }
 
-  private State derpOpenBottomClaw() {
+  private State openBottomClawState() {
     return new State(
             () -> { openBottomClaw(); waitFor(0.6); },
             () -> input.elapsedSeconds > memory.targetWaitSeconds
     );
   }
 
-  private State derpMoveToSpikeMarks() {
-    return derpMove(oneTile * 1.3);
+  private State moveToSpikeMarks() {
+    return moveState(oneTile * 1.3);
   }
 
-  public State derpMove(double distance) {
+  public State moveState(double distance) {
     return new State(
             () -> move(distance),
-            () -> driveMovement(),
+            this::driveMovement,
             () -> !inProgressMove(input.wheelPosition)
     );
   }
 
-  public State derpTurn(double angle) {
+  public State turnState(double angle) {
     return new State(
             () -> turn(angle),
-            () -> turnMovement(),
+            this::turnMovement,
             () -> !inProgressTurn(input.yaw)
     );
   }
 
-  public State derpCloseClaws() {
+  public State closeClawsState() {
     return new State(
             () -> { closeClaws(); waitFor(0.6); },
             () -> input.elapsedSeconds > memory.targetWaitSeconds
     );
-  }
-
-  public Output backstageRed() {
-    return computeAutonomous(this::runBackstageRedStep);
-  }
-
-  public Output backstageBlue() {
-    return computeAutonomous(this::runBackstageBlueStep);
-  }
-
-  public Output frontstageBlue() {
-    return computeAutonomous(this::runFrontstageBlueStep);
-  }
-
-  public Output frontstageRed() {
-    return computeAutonomous(this::runFrontstageRedStep);
-  }
-
-  interface StepCallback {
-    void call();
-  }
-  private void runTeamPropStep() {
-    switch(memory.currentStep + 1) {
-      case 1: closeClaws(); break;
-      case 2: waitAfterClaws(); break;
-      case 3: moveToSpikeMark(); break;
-      case 4: openBottomClaw(); break;
-      case 5: waitAfterClaws(); break;
-      case 6: moveBackFromSpikeMarks(); break;
-      default: stop();
-    }
   }
 
   private void closeClaws() {
@@ -275,181 +237,20 @@ public class Compute {
     memory.bottomClawPosition = clawClosed;
   }
 
-  private void waitAfterClaws() {
-    waitFor(0.6);
-  }
-
-  private void moveToSpikeMark() {
-    move(oneTile * 1.3);
-  }
-
   private void openBottomClaw() {
     memory.bottomClawPosition = clawOpen;
-  }
-
-  private void moveBackFromSpikeMarks() {
-     move(-oneTile * 0.9);
-  }
-
-  private void runBackstageRedStep() {
-    switch(memory.currentStep + 1) {
-      case 1: closeClaws(); break;
-      case 2: waitAfterClaws(); break;
-      case 3: moveToSpikeMark(); break;
-      case 4: openBottomClaw(); break;
-      case 5: waitAfterClaws(); break;
-      case 6: moveBackFromSpikeMarks(); break;
-      case 7: turn(turnRight); break;
-      case 8: toBackstageShort(); break;
-      case 9: openTopClaw(); break;
-      case 10: waitAfterClaws(); break;
-      case 11: nudgeBack(); break;
-      default: stop(); break;
-    }
-  }
-
-  private void toBackstageShort() {
-    move(oneTile * 1.8);
   }
 
   private void openTopClaw() {
     memory.topClawPosition = clawOpen;
   }
 
-  private void nudgeBack() {
-    move(-oneTile * 0.2);
-  }
-
-  private void runBackstageBlueStep() {
-    switch(memory.currentStep + 1) {
-      case 1: closeClaws(); break;
-      case 2: waitAfterClaws(); break;
-      case 3: moveToSpikeMark(); break;
-      case 4: openBottomClaw(); break;
-      case 5: waitAfterClaws(); break;
-      case 6: moveBackFromSpikeMarks(); break;
-      case 7: turn(turnLeft); break;
-      case 8: toBackstageShort(); break;
-      case 9: openTopClaw(); break;
-      case 10: waitAfterClaws(); break;
-      case 11: nudgeBack(); break;
-      default: stop(); break;
-    }
-  }
-
-  private void runFrontstageBlueStep() {
-    switch(memory.currentStep + 1) {
-      case 1: closeClaws(); break;
-      case 2: waitAfterClaws(); break;
-      case 3: moveToSpikeMark(); break;
-      case 4: openBottomClaw(); break;
-      case 5: waitAfterClaws(); break;
-      case 6: moveBackFromSpikeMarks(); break;
-      case 7: turn(turnRight); break;
-      case 8: moveToWing(); break;
-      case 9: turn(turnLeft); break;
-      case 10: wingToMiddle(); break;
-      case 11: turn(45); break;
-      case 12: moveToMiddle(); break;
-      case 13: turn(45); break;
-      case 14: moveBackstageLong(); break;
-      case 15: openTopClaw(); break;
-      case 16: nudgeBack(); break;
-      default: stop();
-    }
-  }
-
-  private void moveToWing() {
-    move(oneTile * 0.8);
-  }
-
-  private void wingToMiddle() {
-    move(oneTile * 1.7);
-  }
-
-  private void moveToMiddle() {
-    move(oneTile * 0.8);
-  }
-
-  private void moveBackstageLong() {
-    move(oneTile * 4);
-  }
-
-  private void runFrontstageRedStep() {
-    switch(memory.currentStep + 1) {
-      case 1: closeClaws(); break;
-      case 2: waitAfterClaws(); break;
-      case 3: moveToSpikeMark(); break;
-      case 4: openBottomClaw(); break;
-      case 5: waitAfterClaws(); break;
-      case 6: moveBackFromSpikeMarks(); break;
-      case 7: turn(turnLeft); break;
-      case 8: moveToWing(); break;
-      case 9: turn(turnRight); break;
-      case 10: wingToMiddle(); break;
-      case 11: turn(-45); break;
-      case 12: moveToMiddle(); break;
-      case 13: turn(-45); break;
-      case 14: moveBackstageLong(); break;
-      case 15: openTopClaw(); break;
-      case 16: nudgeBack(); break;
-      default: stop();
-    }
-  }
-
-
-  private Output computeAutonomous(StepCallback stepCallback) {
-    Output output = new Output();
-
-    if (!inProgress(input.wheelPosition, input.yaw)) {
-      stepCallback.call();
-      memory.currentStep += 1;
-      output.addTel("inProgress", false);
-    } else {
-      output.addTel("inProgress", true);
-    }
-
-    output.addTel("currentStep", memory.currentStep);
-
-    output.topClawPosition = memory.topClawPosition;
-    output.bottomClawPosition = memory.bottomClawPosition;
-    output.armMotorPower = autoArmPower(input.armPosition);
-
-    if (input.elapsedSeconds < memory.targetWaitSeconds) {
-      return output;
-    }
-
-    if (memory.currentlyTurning) {
-      output.movement = autoTurn(input.yaw, memory.targetAngle, 1d);
-    } else if (memory.currentlyDriving) {
-      Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle, 5d);
-      Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
-
-      output.movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower);
-      output.movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower);
-      output.movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower);
-      output.movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower);
-    }
-
-    output.addTel("targetMovePosition", memory.targetMovePosition);
-    output.addTel("wheelPosition", input.wheelPosition);
-
-    output.addTel("targetAngle", memory.targetAngle);
-    output.addTel("yaw", input.yaw);
-
-    output.addTel("frontLeftPower", output.movement.frontLeftPower);
-    output.addTel("frontRightPower", output.movement.frontRightPower);
-    output.addTel("rearLeftPower", output.movement.rearLeftPower);
-    output.addTel("rearRightPower", output.movement.rearRightPower);
-
-    return output;
-  }
 
   private Output.Movement manualDrive(float gameStickRightX, float gameStickLeftY, float gameStickLeftX) {
     Output.Movement movement = new Output.Movement();
-    Output.Movement turnMovement = turnOutput(gameStickRightX);
+    Output.Movement turnMovement = manualTurn(gameStickRightX);
     Output.Movement moveMovement = manualMove(gameStickLeftY);
-    Output.Movement strafeMovement = strafeOutput(gameStickLeftX);
+    Output.Movement strafeMovement = manualStrafe(gameStickLeftX);
 
     movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower + strafeMovement.frontLeftPower);
     movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower + strafeMovement.frontRightPower);
@@ -508,7 +309,7 @@ public class Compute {
     return movement;
   }
 
-  private Output.Movement turnOutput(float gameStickRightX) {
+  private Output.Movement manualTurn(float gameStickRightX) {
     Output.Movement movement = new Output.Movement();
     movement.frontLeftPower = gameStickRightX;
     movement.frontRightPower = -gameStickRightX;
@@ -528,7 +329,7 @@ public class Compute {
     return movement;
   }
 
-  private Output.Movement strafeOutput(float gameStickLeftX) {
+  private Output.Movement manualStrafe(float gameStickLeftX) {
     Output.Movement movement = new Output.Movement();
     movement.frontLeftPower = -gameStickLeftX;
     movement.frontRightPower = gameStickLeftX;
@@ -614,11 +415,7 @@ public class Compute {
       return -0.6f;
     }
 
-    if (unclipped > 0.6f) {
-      return 0.6f;
-    }
-
-    return unclipped;
+    return Math.min(unclipped, 0.6f);
   }
 
   private float autoMinimum(float power) {
@@ -631,21 +428,6 @@ public class Compute {
     }
 
     return power;
-  }
-
-  public void runStep(int stepNumber) {
-    switch(stepNumber) {
-      case 1: step1(); break;
-    }
-    memory.currentStep = stepNumber;
-  }
-
-  public boolean inProgress(int wheelPosition, double yaw) {
-    if (memory.currentlyTurning) {
-      return inProgressTurn(yaw);
-    }
-
-    return inProgressMove(wheelPosition) || inProgressTurn(yaw);
   }
 
   public boolean inProgressMove(int wheelPosition) {
@@ -663,13 +445,10 @@ public class Compute {
   }
 
   public boolean moveCloseEnough(double a, double b) {
-    double difference = Math.abs(a -b);
+    double difference = Math.abs(a - b);
     return difference <= 8;
   }
 
-  public void step1() {
-    move(2000);
-  }
   public void turn(double turnAmount) {
     double targetAngle = memory.targetAngle + turnAmount;
 
@@ -680,23 +459,14 @@ public class Compute {
     } else {
       memory.targetAngle = targetAngle;
     }
-    memory.currentlyTurning = true;
-    memory.currentlyDriving = false;
   }
 
   public void move(int moveAmount) {
     memory.targetMovePosition = input.wheelPosition + moveAmount;
-    memory.currentlyDriving = true;
-    memory.currentlyTurning = false;
   }
 
   public void move(double moveAmount) {
     move((int) moveAmount);
-  }
-
-  public void stop() {
-    memory.currentlyDriving = false;
-    memory.currentlyTurning = false;
   }
 
   public void waitFor(double waitSeconds) {

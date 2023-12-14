@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class BackStageBlue2023 extends BaseAutoOp2023 {
     @Override
     protected void setupCompute() {
-        compute.stateMachine = compute.derpBackStageBlue();
+        compute.stateMachine = compute.backStageBlue();
     }
 }
 

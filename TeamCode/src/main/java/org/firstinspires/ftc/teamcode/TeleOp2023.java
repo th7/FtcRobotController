@@ -10,5 +10,9 @@ public class TeleOp2023 extends BaseOp2023 {
     }
 
     @Override
+    protected void setupCompute() {}
+
+    @Override
     protected void typeSpecificInit() {}
+
 }
