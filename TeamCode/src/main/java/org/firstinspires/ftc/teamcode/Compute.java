@@ -113,7 +113,6 @@ public class Compute {
     return new LinearStateMachine(
             closeClawsState(),
             moveToSpikeMarks(),
-            moveBackFromSpikeMarks(),
             openBottomClawState(),
             moveBackFromSpikeMarks()
     );
