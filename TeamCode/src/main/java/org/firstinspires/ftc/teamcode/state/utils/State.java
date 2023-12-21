@@ -7,10 +7,9 @@ public class State implements Stateful {
     private final VoidCallable start;
     private final Callable<Boolean> done;
     private final Callable<Output.Movement> movement;
+
     public State(VoidCallable start, Callable<Boolean> done) {
-        this.start = start;
-        this.movement = Output.Movement::new;
-        this.done = done;
+        this(start, Output.Movement::new, done);
     }
 
     public State(VoidCallable start, Callable<Output.Movement> movement, Callable<Boolean> done) {

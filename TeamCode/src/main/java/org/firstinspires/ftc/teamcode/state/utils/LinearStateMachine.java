@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class LinearStateMachine implements Stateful {
     private final ArrayList<Stateful> states = new ArrayList<>();
-    private int currentState = 0;
+    private int currentStateIndex = 0;
 
     public LinearStateMachine(Stateful... all) {
         addAll(all);
@@ -24,9 +24,9 @@ public class LinearStateMachine implements Stateful {
     @Override
     public boolean done() {
         try {
-            Stateful currentState = states.get(this.currentState);
+            Stateful currentState = states.get(currentStateIndex);
             if (currentState.done()) {
-                this.currentState += 1;
+                currentStateIndex += 1;
             }
             return false;
         } catch(IndexOutOfBoundsException e) {
@@ -36,7 +36,7 @@ public class LinearStateMachine implements Stateful {
 
     public Output.Movement movement() {
         try {
-            Stateful currentState = states.get(this.currentState);
+            Stateful currentState = states.get(currentStateIndex);
             return currentState.movement();
         } catch(IndexOutOfBoundsException e) {
             return new Output.Movement();

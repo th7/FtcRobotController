@@ -55,22 +55,6 @@ public class Compute {
     return output;
   }
 
-  private Output.Movement turnMovement() {
-    return autoTurn(input.yaw, memory.targetAngle, 1d);
-  }
-
-  private Output.Movement driveMovement() {
-    Output.Movement movement = new Output.Movement();
-    Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle, 5d);
-    Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
-
-    movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower);
-    movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower);
-    movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower);
-    movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower);
-
-    return movement;
-  }
   public Output teleOp() {
     Output output = new Output();
 
@@ -118,14 +102,6 @@ public class Compute {
     );
   }
 
-  public LinearStateMachine backStageRed() {
-    return backstage(turnRight);
-  }
-
-  public LinearStateMachine backStageBlue() {
-    return backstage(turnLeft);
-  }
-
   public LinearStateMachine backstage(double turn) {
     return new LinearStateMachine(
             teamProp(),
@@ -135,14 +111,6 @@ public class Compute {
             openTopClawState(),
             nudgeBack()
     );
-  }
-
-  public LinearStateMachine frontStageRed() {
-    return frontStage(1);
-  }
-
-  public LinearStateMachine frontStageBlue() {
-    return frontStage(-1);
   }
 
   public LinearStateMachine frontStage(int turnDirection) {
@@ -162,39 +130,31 @@ public class Compute {
     );
   }
 
-  private Stateful moveBackStageLong() {
-    return moveState(oneTile * 4);
+  public LinearStateMachine backStageRed() {
+    return backstage(turnRight);
   }
 
-  private Stateful moveToMiddle() {
-    return moveState(oneTile * 0.8);
+  public LinearStateMachine backStageBlue() {
+    return backstage(turnLeft);
   }
 
-  private Stateful wingToMiddle() {
-    return moveState(oneTile * 1.7);
+  public LinearStateMachine frontStageRed() {
+    return frontStage(1);
   }
 
-  private Stateful moveToWing() {
-    return moveState(oneTile * 0.8);
+  public LinearStateMachine frontStageBlue() {
+    return frontStage(-1);
   }
 
-  private Stateful nudgeBack() {
-    return moveState(-oneTile * 0.2);
-  }
-
-  private Stateful openTopClawState() {
+  public State closeClawsState() {
     return new State(
-            () -> { openTopClaw(); waitFor(0.6); },
+            () -> { closeClaws(); waitFor(0.6); },
             () -> input.elapsedSeconds > memory.targetWaitSeconds
     );
   }
 
-  private Stateful toBackStageShort() {
-    return moveState(oneTile * 1.8);
-  }
-
-  private State moveBackFromSpikeMarks() {
-    return moveState(-oneTile * 0.9);
+  private State moveToSpikeMarks() {
+    return moveState(oneTile * 1.3);
   }
 
   private State openBottomClawState() {
@@ -204,15 +164,46 @@ public class Compute {
     );
   }
 
-  private State moveToSpikeMarks() {
-    return moveState(oneTile * 1.3);
+  private State moveBackFromSpikeMarks() {
+    return moveState(-oneTile * 0.9);
+  }
+
+  private Stateful toBackStageShort() {
+    return moveState(oneTile * 1.8);
+  }
+
+  private Stateful moveToWing() {
+    return moveState(oneTile * 0.8);
+  }
+
+  private Stateful wingToMiddle() {
+    return moveState(oneTile * 1.7);
+  }
+
+  private Stateful moveToMiddle() {
+    return moveState(oneTile * 0.8);
+  }
+
+  private Stateful moveBackStageLong() {
+    return moveState(oneTile * 4);
+  }
+
+  private Stateful openTopClawState() {
+    return new State(
+            () -> { openTopClaw(); waitFor(0.6); },
+            () -> input.elapsedSeconds > memory.targetWaitSeconds
+    );
+  }
+
+  private Stateful nudgeBack() {
+    return moveState(-oneTile * 0.2);
   }
 
   public State moveState(double distance) {
     return new State(
             () -> move(distance),
             this::driveMovement,
-            () -> !inProgressMove(input.wheelPosition)
+            () -> closeEnough(input.wheelPosition, memory.targetMovePosition, 8)
     );
   }
 
@@ -220,14 +211,7 @@ public class Compute {
     return new State(
             () -> turn(angle),
             this::turnMovement,
-            () -> !inProgressTurn(input.yaw)
-    );
-  }
-
-  public State closeClawsState() {
-    return new State(
-            () -> { closeClaws(); waitFor(0.6); },
-            () -> input.elapsedSeconds > memory.targetWaitSeconds
+            () -> closeEnough(input.yaw, memory.targetAngle, 1)
     );
   }
 
@@ -244,6 +228,22 @@ public class Compute {
     memory.topClawPosition = clawOpen;
   }
 
+  private Output.Movement turnMovement() {
+    return autoTurn(input.yaw, memory.targetAngle, 1d);
+  }
+
+  private Output.Movement driveMovement() {
+    Output.Movement movement = new Output.Movement();
+    Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle, 5d);
+    Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
+
+    movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower);
+    movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower);
+    movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower);
+    movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower);
+
+    return movement;
+  }
 
   private Output.Movement manualDrive(float gameStickRightX, float gameStickLeftY, float gameStickLeftX) {
     Output.Movement movement = new Output.Movement();
@@ -349,15 +349,6 @@ public class Compute {
       return -0.25f;
     }
 
-//    if (triangle) {
-//      memory.autoMoveArm = true;
-//      memory.targetArmPosition = armUpPosition;
-//    }
-//    if (cross) {
-//      memory.autoMoveArm = true;
-//      memory.targetArmPosition = armDownPosition;
-//    }
-
     if (!memory.autoMoveArm) {
       return 0f;
     }
@@ -429,23 +420,9 @@ public class Compute {
     return power;
   }
 
-  public boolean inProgressMove(int wheelPosition) {
-    return !moveCloseEnough(memory.targetMovePosition, wheelPosition);
-  }
-
-  public boolean inProgressTurn(double yaw) {
-    return !turnCloseEnough(memory.targetAngle, yaw);
-  }
-
-
-  public boolean turnCloseEnough(double a, double b) {
+  private boolean closeEnough(double a, double b, int threshold) {
     double difference = Math.abs(a - b);
-    return difference <= 1;
-  }
-
-  public boolean moveCloseEnough(double a, double b) {
-    double difference = Math.abs(a - b);
-    return difference <= 8;
+    return difference <= threshold;
   }
 
   public void turn(double turnAmount) {
