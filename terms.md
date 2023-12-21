@@ -5,31 +5,37 @@ This document provides some terms that it will be helpful to memorize and code s
 
 <details>
 <summary>symbol</summary>
+
 An extremely generic term for a word in your code. Will most commonly be encountered in errors resembling "Cannot resolve symbol 'somethingInMyCode'".
 </details>
 
 <details>
 <summary>scope</summary>
+
 Generally refers to a section of code. The "scope" in which a piece of code is written determines which symbols can resolved in that code.
 </details>
 
 <details>
 <summary>block</summary>
+
 A section of code surrounded by `{}`. A block will affect scoping of local variables.
 </details>
 
 <details>
 <summary>local variable</summary>
+
 A variable that can only be used within the block in which it was created.
 </details>
 
 <details>
 <summary>field</summary>
+
 A field is defined within a class body. Fields be resolved anywhere within the class.
 </details>
 
 <details>
 <summary>type</summary>
+
 Describes what can be stored in a variable or field.
 
 A type might be a primitive such as `int`, `float`, or `boolean`. 
@@ -39,17 +45,20 @@ A type might also be a class that comes from the Java language itself, a class f
 
 <details>
 <summary>access modifier</summary>
+
 An access modifier describes where a class or method can be used by other code.
 Most commonly, this will be `private` or `public`. A `private` method can only be called from within the class that defines the method. A `public` method can be called from outside the class.
 </details>
 
 <details>
 <summary>constructor</summary>
+
 A constructor is sort of like a special method that creates a new instance of a class. It uses the name of the class in its definition.
 </details>
 
 <details>
 <summary>this</summary>
+
 A keyword that refers to the instance of the class where the keyword is located. In most cases, it is implied and not needed, but sometimes it is necessary to differentiate fields from local variables or arguments.
 </details>
 
