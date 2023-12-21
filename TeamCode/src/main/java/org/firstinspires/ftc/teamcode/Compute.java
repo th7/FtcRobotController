@@ -210,7 +210,7 @@ public class Compute {
   public State turnState(double angle) {
     return new State(
             () -> turn(angle),
-            this::turnMovement,
+            () -> autoTurn(input.yaw, memory.targetAngle, 1d),
             () -> closeEnough(input.yaw, memory.targetAngle, 1)
     );
   }
@@ -228,35 +228,19 @@ public class Compute {
     memory.topClawPosition = clawOpen;
   }
 
-  private Output.Movement turnMovement() {
-    return autoTurn(input.yaw, memory.targetAngle, 1d);
-  }
-
   private Output.Movement driveMovement() {
-    Output.Movement movement = new Output.Movement();
     Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle, 5d);
     Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
 
-    movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower);
-    movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower);
-    movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower);
-    movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower);
-
-    return movement;
+    return turnMovement.add(moveMovement).clip(1f);
   }
 
   private Output.Movement manualDrive(float gameStickRightX, float gameStickLeftY, float gameStickLeftX) {
-    Output.Movement movement = new Output.Movement();
     Output.Movement turnMovement = manualTurn(gameStickRightX);
     Output.Movement moveMovement = manualMove(gameStickLeftY);
     Output.Movement strafeMovement = manualStrafe(gameStickLeftX);
 
-    movement.frontLeftPower = clip(turnMovement.frontLeftPower + moveMovement.frontLeftPower + strafeMovement.frontLeftPower);
-    movement.frontRightPower = clip(turnMovement.frontRightPower + moveMovement.frontRightPower + strafeMovement.frontRightPower);
-    movement.rearLeftPower = clip(turnMovement.rearLeftPower + moveMovement.rearLeftPower + strafeMovement.rearLeftPower);
-    movement.rearRightPower = clip(turnMovement.rearRightPower + moveMovement.rearRightPower + strafeMovement.rearRightPower);
-
-    return movement;
+    return turnMovement.add(moveMovement, strafeMovement).clip(1f);
   }
 
   private void manualClaw(boolean leftBumper, boolean rightBumper, float leftTrigger, float rightTrigger) {
@@ -309,33 +293,28 @@ public class Compute {
   }
 
   private Output.Movement manualTurn(float gameStickRightX) {
-    Output.Movement movement = new Output.Movement();
-    movement.frontLeftPower = gameStickRightX;
-    movement.frontRightPower = -gameStickRightX;
-    movement.rearLeftPower = gameStickRightX;
-    movement.rearRightPower = -gameStickRightX;
-    return movement;
+//    Output.Movement movement = new Output.Movement();
+//    movement.frontLeftPower = gameStickRightX;
+//    movement.frontRightPower = -gameStickRightX;
+//    movement.rearLeftPower = gameStickRightX;
+//    movement.rearRightPower = -gameStickRightX;
+//    return movement;
+    return new Output.Movement().turn(gameStickRightX);
   }
 
   private Output.Movement manualMove(float gameStickLeftY) {
-    Output.Movement movement = new Output.Movement();
-
-    movement.frontLeftPower = -gameStickLeftY;
-    movement.frontRightPower = -gameStickLeftY;
-    movement.rearLeftPower = -gameStickLeftY;
-    movement.rearRightPower = -gameStickLeftY;
-
-    return movement;
+    return new Output.Movement().move(-gameStickLeftY);
   }
 
   private Output.Movement manualStrafe(float gameStickLeftX) {
-    Output.Movement movement = new Output.Movement();
-    movement.frontLeftPower = -gameStickLeftX;
-    movement.frontRightPower = gameStickLeftX;
-    movement.rearLeftPower = gameStickLeftX;
-    movement.rearRightPower = -gameStickLeftX;
-
-    return movement;
+//    Output.Movement movement = new Output.Movement();
+//    movement.frontLeftPower = -gameStickLeftX;
+//    movement.frontRightPower = gameStickLeftX;
+//    movement.rearLeftPower = gameStickLeftX;
+//    movement.rearRightPower = -gameStickLeftX;
+//
+//    return movement;
+    return new Output.Movement().strafe(gameStickLeftX);
   }
 
   private float arm(boolean dPadUp, boolean dPadDown, int armPosition) {
@@ -388,18 +367,6 @@ public class Compute {
     return 0f;
   }
 
-  private float clip(float unclipped) {
-    if (unclipped < -1) {
-      return -1f;
-    }
-
-    if (unclipped > 1) {
-      return 1f;
-    }
-
-    return unclipped;
-  }
-
   private float autoClip(float unclipped) {
     if (unclipped < -0.6f) {
       return -0.6f;
@@ -448,10 +415,4 @@ public class Compute {
   public void waitFor(double waitSeconds) {
     memory.targetWaitSeconds = input.elapsedSeconds + waitSeconds;
   }
-
-  // private float logistic(float offset) {
-  //   float e = 2.71828f; // should be constant
-  //   float k = -0.1f; // adjust to tune steepness of curve
-  //   return 2 / (1 + Math.pow(e, k * offset);
-  // }
 }

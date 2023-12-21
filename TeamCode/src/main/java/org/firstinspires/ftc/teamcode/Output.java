@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.sun.tools.javac.util.Pair;
-
 import java.util.ArrayList;
 
 public class Output {
@@ -11,6 +9,67 @@ public class Output {
     public float frontRightPower = 0f;
     public float rearLeftPower = 0f;
     public float rearRightPower = 0f;
+
+    public Movement add(Movement... others) {
+      Movement movement = new Movement();
+
+      movement.frontLeftPower = this.frontLeftPower;
+      movement.frontRightPower = this.frontRightPower;
+      movement.rearLeftPower = this.rearLeftPower;
+      movement.rearRightPower = this.rearRightPower;
+
+      for (Movement other : others) {
+        movement.frontLeftPower += other.frontLeftPower;
+        movement.frontRightPower += other.frontRightPower;
+        movement.rearLeftPower += other.rearLeftPower;
+        movement.rearRightPower += other.rearRightPower;
+      }
+
+      return movement;
+    }
+
+    public Movement clip(float max) {
+      this.frontLeftPower = clip(this.frontLeftPower, max);
+      this.frontRightPower = clip(this.frontRightPower, max);
+      this.rearRightPower = clip(this.rearRightPower, max);
+      this.rearLeftPower = clip(this.rearLeftPower, max);
+      return this;
+    }
+
+    public Movement move(float power) {
+      this.frontLeftPower = power;
+      this.frontRightPower = power;
+      this.rearLeftPower = power;
+      this.rearRightPower = power;
+      clip(1f);
+      return this;
+    }
+
+    public Movement turn(float power) {
+      this.frontLeftPower = -power;
+      this.frontRightPower = power;
+      this.rearLeftPower = -power;
+      this.rearRightPower = power;
+      clip(1f);
+      return this;
+    }
+
+    public Movement strafe(float power) {
+      this.frontLeftPower = -power;
+      this.frontRightPower = power;
+      this.rearLeftPower = power;
+      this.rearRightPower = -power;
+      clip(1f);
+      return this;
+    }
+
+    private float clip(float unclipped, float max) {
+      if (unclipped < -max) {
+        return -max;
+      }
+
+      return Math.min(unclipped, max);
+    }
   }
   public static class Telemetry {
     public String name;
