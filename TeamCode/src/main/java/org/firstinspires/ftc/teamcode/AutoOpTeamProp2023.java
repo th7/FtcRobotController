@@ -7,6 +7,6 @@ public class AutoOpTeamProp2023 extends BaseAutoOp2023 {
     @Override
     public void init() {
         super.init();
-        compute.stateMachine = plan.teamProp();
+        stateMachine = plan.teamProp();
     }
 }

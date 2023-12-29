@@ -30,6 +30,40 @@ public class TeleOp2023 extends BaseOp2023 {
 
     @Override
     public Output compute() {
-        return compute.teleOp();
+        Output output = new Output();
+
+        output.armMotorPower = compute.arm();
+        output.movement = compute.manualDrive();
+        output.winchMotorPower = compute.winch();
+
+        compute.manualClaw();
+        output.topClawPosition = memory.topClawPosition;
+        output.bottomClawPosition = memory.bottomClawPosition;
+
+        if (compute.input.circle) {
+            output.launcherPosition = 0.7d;
+        }
+
+        output.addTel("gameStickLeftX", compute.input.gameStickLeftX);
+        output.addTel("gameStickLeftY", compute.input.gameStickLeftY);
+        output.addTel("gameStickRightX", compute.input.gameStickRightX);
+        output.addTel("gameStickRightY", compute.input.gameStickRightY);
+
+        output.addTel("frontLeftPower", output.movement.frontLeftPower);
+        output.addTel("frontRightPower", output.movement.frontRightPower);
+        output.addTel("rearLeftPower", output.movement.rearLeftPower);
+        output.addTel("rearRightPower", output.movement.rearRightPower);
+
+        output.addTel("circle", compute.input.circle);
+        output.addTel("launcherPosition", output.launcherPosition);
+
+        output.addTel("leftTrigger", compute.input.leftTrigger);
+        output.addTel("rightTrigger", compute.input.rightTrigger);
+        output.addTel("leftBumper", compute.input.leftBumper);
+        output.addTel("rightBumper", compute.input.rightBumper);
+        output.addTel("topClawPosition", output.topClawPosition);
+        output.addTel("bottomClawPosition", output.bottomClawPosition);
+
+        return output;
     }
 }

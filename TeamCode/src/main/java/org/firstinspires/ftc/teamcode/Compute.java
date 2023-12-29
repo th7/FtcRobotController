@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import org.firstinspires.ftc.teamcode.state.utils.Stateful;
-import org.firstinspires.ftc.teamcode.state.utils.State;
-import org.firstinspires.ftc.teamcode.state.utils.LinearStateMachine;
-
 public class Compute {
   public final int armUpPosition = 50;
   public final int armDownPosition = 0;
@@ -21,76 +17,10 @@ public class Compute {
   public final double turnLeft = -turnRight;
 
   public final Memory memory;
-  public Stateful stateMachine;
   public Input input;
 
   Compute(Memory memory) {
     this.memory = memory;
-  }
-
-  Output computeAutonomous() {
-    Output output = new Output();
-
-    if (stateMachine.done()) {
-      output.addTel("done", true);
-      return output;
-    }
-
-    output.topClawPosition = memory.topClawPosition;
-    output.bottomClawPosition = memory.bottomClawPosition;
-    output.armMotorPower = autoArmPower();
-    output.movement = stateMachine.movement();
-
-    output.addTel("targetMovePosition", memory.targetMovePosition);
-    output.addTel("wheelPosition", input.wheelPosition);
-
-    output.addTel("targetAngle", memory.targetAngle);
-    output.addTel("yaw", input.yaw);
-
-    output.addTel("frontLeftPower", output.movement.frontLeftPower);
-    output.addTel("frontRightPower", output.movement.frontRightPower);
-    output.addTel("rearLeftPower", output.movement.rearLeftPower);
-    output.addTel("rearRightPower", output.movement.rearRightPower);
-
-    return output;
-  }
-
-  public Output teleOp() {
-    Output output = new Output();
-
-    output.armMotorPower = arm();
-    output.movement = manualDrive();
-    output.winchMotorPower = winch();
-
-    manualClaw();
-    output.topClawPosition = memory.topClawPosition;
-    output.bottomClawPosition = memory.bottomClawPosition;
-
-    if (input.circle) {
-      output.launcherPosition = 0.7d;
-    }
-
-    output.addTel("gameStickLeftX", input.gameStickLeftX);
-    output.addTel("gameStickLeftY", input.gameStickLeftY);
-    output.addTel("gameStickRightX", input.gameStickRightX);
-    output.addTel("gameStickRightY", input.gameStickRightY);
-
-    output.addTel("frontLeftPower", output.movement.frontLeftPower);
-    output.addTel("frontRightPower", output.movement.frontRightPower);
-    output.addTel("rearLeftPower", output.movement.rearLeftPower);
-    output.addTel("rearRightPower", output.movement.rearRightPower);
-
-    output.addTel("circle", input.circle);
-    output.addTel("launcherPosition", output.launcherPosition);
-
-    output.addTel("leftTrigger", input.leftTrigger);
-    output.addTel("rightTrigger", input.rightTrigger);
-    output.addTel("leftBumper", input.leftBumper);
-    output.addTel("rightBumper", input.rightBumper);
-    output.addTel("topClawPosition", output.topClawPosition);
-    output.addTel("bottomClawPosition", output.bottomClawPosition);
-
-    return output;
   }
 
   public void closeClaws() {
@@ -113,11 +43,11 @@ public class Compute {
     return turnMovement.add(0f, 1f, moveMovement);
   }
 
-  private Output.Movement manualDrive() {
+  public Output.Movement manualDrive() {
     return manualTurn().add(0f, 1f, manualMove(), manualStrafe());
   }
 
-  private void manualClaw() {
+  public void manualClaw() {
     if (input.rightBumper) {
       memory.topClawPosition = clawClosed;
     }
@@ -168,7 +98,7 @@ public class Compute {
     return Output.Movement.strafe(input.gameStickLeftX, 0f, 1f);
   }
 
-  private float arm() {
+  public float arm() {
     if (input.dPadUp) {
       memory.autoMoveArm = false;
       return 0.25f;
@@ -206,7 +136,7 @@ public class Compute {
     return 0f;
   }
 
-  private float winch() {
+  public float winch() {
     if (input.triangle) {
       return 1f;
     }
