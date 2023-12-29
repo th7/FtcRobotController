@@ -70,7 +70,7 @@ public class Compute {
     }
   }
 
-  public Output.Movement autoTurn(double gain) {
+  private Output.Movement autoTurn(double gain) {
     double distanceToTurn = memory.targetAngle - input.yaw;
     double shortDistanceToTurn;
 
@@ -105,7 +105,7 @@ public class Compute {
     return autoArmPower();
   }
 
-  public float autoArmPower() {
+  private float autoArmPower() {
     if (input.armPosition < memory.targetArmPosition && memory.targetArmPosition - input.armPosition <= armSlowThreshold) {
       return armSlow;
     }
@@ -153,7 +153,7 @@ public class Compute {
     return closeEnough(input.yaw, memory.targetAngle, 1);
   }
 
-  public void move(int moveAmount) {
+  private void move(int moveAmount) {
     memory.targetMovePosition = input.wheelPosition + moveAmount;
   }
 

@@ -21,6 +21,7 @@ public class SameTimeStep implements PlanPart {
     }
 
     public Output.Movement movement() {
-        return movement.call();
+//        return movement.call();
+        return new Output.Movement();
     }
 }

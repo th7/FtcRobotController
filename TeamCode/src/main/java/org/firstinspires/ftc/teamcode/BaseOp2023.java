@@ -11,19 +11,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class BaseOp2023 extends OpMode {
   Memory memory = new Memory();
   Compute compute = new Compute(memory);
-  private final ElapsedTime runtime = new ElapsedTime();
+  final ElapsedTime runtime = new ElapsedTime();
   DcMotor leftFront = null;
   DcMotor rightFront = null;
   DcMotor leftBack = null;
   DcMotor rightBack = null;
 
-  private DcMotor armMotor1 = null;
-  private DcMotor armMotor2 = null;
-  private DcMotor winchMotor = null;
-  private IMU imu = null;
-  private Servo topClaw = null;
-  private Servo bottomClaw = null;
-  private Servo droneLauncher = null;
+  DcMotor armMotor1 = null;
+  DcMotor armMotor2 = null;
+  DcMotor winchMotor = null;
+  IMU imu = null;
+  Servo topClaw = null;
+  Servo bottomClaw = null;
+  Servo droneLauncher = null;
 
   @Override
   public void init() {
@@ -64,46 +64,5 @@ public class BaseOp2023 extends OpMode {
   }
 
   @Override
-  public void loop() {
-    compute.input = collectInputs();
-    Output output = compute();
-    setOutputs(output);
-  }
-
-  @Override
   public void stop() {}
-
-  public Input collectInputs() {
-    Input input = new Input();
-
-    input.elapsedSeconds = runtime.seconds();
-
-    input.armPosition = armMotor1.getCurrentPosition();
-    input.wheelPosition = leftFront.getCurrentPosition();
-
-    input.yaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-
-    return input;
-  }
-
-  public Output compute() { return new Output(); }
-
-  private void setOutputs(Output output) {
-    output.telemetry.forEach((tele) -> telemetry.addData(tele.name, tele.value));
-    telemetry.update();
-
-    leftFront.setPower(output.movement.frontLeftPower);
-    rightFront.setPower(output.movement.frontRightPower);
-    leftBack.setPower(output.movement.rearLeftPower);
-    rightBack.setPower(output.movement.rearRightPower);
-
-    armMotor1.setPower(output.armMotorPower);
-    armMotor2.setPower(output.armMotorPower);
-    winchMotor.setPower(output.winchMotorPower);
-
-    topClaw.setPosition(output.topClawPosition);
-    bottomClaw.setPosition(output.bottomClawPosition);
-
-    droneLauncher.setPosition(output.launcherPosition);
-  }
 }

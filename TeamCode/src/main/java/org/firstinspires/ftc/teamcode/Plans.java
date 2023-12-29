@@ -6,12 +6,24 @@ import org.firstinspires.ftc.teamcode.state.utils.PlanPart;
 
 public class Plans {
     private final Compute compute;
+    private final AutoArmController armController;
+    private final AutoMoveController moveController;
+    private final AutoClawController clawController;
 
-    Plans(Compute compute) {
+    Plans(Compute compute, AutoArmController armController, AutoMoveController moveController, AutoClawController clawController) {
         this.compute = compute;
+        this.armController = armController;
+        this.moveController = moveController;
+        this.clawController = clawController;
     }
 
-    public Plan teamProp() {
+    public void tick() {
+        armController.tick();
+        moveController.tick();
+        clawController.tick();
+    }
+
+    public PlanPart teamProp() {
         return new Plan(
                 closeClaws(),
                 moveToSpikeMarks(),
@@ -20,23 +32,23 @@ public class Plans {
         );
     }
 
-    public Plan backStageRed() {
+    public PlanPart backStageRed() {
         return backstage(compute.turnRight);
     }
 
-    public Plan backStageBlue() {
+    public PlanPart backStageBlue() {
         return backstage(compute.turnLeft);
     }
 
-    public Plan frontStageRed() {
+    public PlanPart frontStageRed() {
         return frontStage(1);
     }
 
-    public Plan frontStageBlue() {
+    public PlanPart frontStageBlue() {
         return frontStage(-1);
     }
 
-    private Plan backstage(double turn) {
+    private PlanPart backstage(double turn) {
         return new Plan(
                 teamProp(),
 
@@ -47,7 +59,7 @@ public class Plans {
         );
     }
 
-    private Plan frontStage(int turnDirection) {
+    private PlanPart frontStage(int turnDirection) {
         return new Plan(
                 teamProp(),
 
@@ -64,25 +76,25 @@ public class Plans {
         );
     }
 
-    private Step closeClaws() {
+    private PlanPart closeClaws() {
         return new Step(
-                compute::closeClaws,
-                compute::clawComplete
+                clawController::closeClaws,
+                clawController::inProgress
         );
     }
 
-    private Step moveToSpikeMarks() {
+    private PlanPart moveToSpikeMarks() {
         return moveTiles(1.3);
     }
 
-    private Step openBottomClaw() {
+    private PlanPart openBottomClaw() {
         return new Step(
-                compute::openBottomClaw,
-                compute::clawComplete
+                clawController::openBottomClaw,
+                clawController::inProgress
         );
     }
 
-    private Step moveBackFromSpikeMarks() {
+    private PlanPart moveBackFromSpikeMarks() {
         return moveTiles(0.9);
     }
 
@@ -108,8 +120,8 @@ public class Plans {
 
     private PlanPart openTopClaw() {
         return new Step(
-                compute::openTopClaw,
-                compute::clawComplete
+                clawController::openTopClaw,
+                clawController::inProgress
         );
     }
 
@@ -117,23 +129,21 @@ public class Plans {
         return moveTiles(-0.2);
     }
 
-    private Step move(double distance) {
+    private PlanPart move(double distance) {
         return new Step(
-                () -> compute.move(distance),
-                compute::driveMovement,
-                compute::moveComplete
+                () -> moveController.moveStraight((int) distance),
+                moveController::inProgress
         );
     }
 
-    private Step moveTiles(double tiles) {
+    private PlanPart moveTiles(double tiles) {
         return move(compute.oneTile * tiles);
     }
 
-    private Step turn(double angle) {
+    private PlanPart turn(double angle) {
         return new Step(
-                () -> compute.turn(angle),
-                () -> compute.autoTurn(1d),
-                compute::turnComplete
+                () -> moveController.turn(angle),
+                moveController::inProgress
         );
     }
 }
