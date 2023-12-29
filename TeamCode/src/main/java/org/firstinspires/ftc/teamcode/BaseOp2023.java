@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -10,9 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Disabled
-@TeleOp(name="BaseOp2023", group="Linear Opmode")
-public abstract class BaseOp2023 extends LinearOpMode {
+public class BaseOp2023 extends OpMode {
   Memory memory = new Memory();
   Compute compute = new Compute(memory);
   private final ElapsedTime runtime = new ElapsedTime();
@@ -30,16 +26,7 @@ public abstract class BaseOp2023 extends LinearOpMode {
   private Servo droneLauncher = null;
 
   @Override
-  public void runOpMode() {
-    baseOpInit();
-    typeSpecificInit();
-    setupCompute();
-    waitForStart();
-    runtime.reset();
-    while (opModeIsActive()) { tick(); }
-  }
-
-  private void baseOpInit() {
+  public void init() {
     leftFront  = hardwareMap.get(DcMotor.class, "LeftFront");
     rightFront = hardwareMap.get(DcMotor.class, "RightFront");
     leftBack = hardwareMap.get(DcMotor.class, "LeftBack");
@@ -68,33 +55,28 @@ public abstract class BaseOp2023 extends LinearOpMode {
     droneLauncher.setPosition(new Output().launcherPosition);
   }
 
-  private void tick() {
+  @Override
+  public void init_loop() {}
+
+  @Override
+  public void start() {
+    runtime.reset();
+  }
+
+  @Override
+  public void loop() {
     compute.input = collectInputs();
-    Output output = compute(compute);
+    Output output = compute();
     setOutputs(output);
   }
 
-  private Input collectInputs() {
+  @Override
+  public void stop() {}
+
+  public Input collectInputs() {
     Input input = new Input();
 
     input.elapsedSeconds = runtime.seconds();
-
-    input.gameStickLeftX = gamepad1.left_stick_x;
-    input.gameStickLeftY = gamepad1.left_stick_y;
-    input.gameStickRightX = gamepad1.right_stick_x;
-    input.gameStickRightY = gamepad1.right_stick_y;
-
-    input.dPadUp = gamepad1.dpad_up;
-    input.dPadDown = gamepad1.dpad_down;
-    input.dPadLeft = gamepad1.dpad_left;
-    input.dPadRight = gamepad1.dpad_right;
-    input.triangle = gamepad1.triangle;
-    input.cross = gamepad1.cross;
-    input.circle = gamepad1.circle;
-    input.rightTrigger = gamepad1.right_trigger;
-    input.leftTrigger = gamepad1.left_trigger;
-    input.rightBumper = gamepad1.right_bumper;
-    input.leftBumper = gamepad1.left_bumper;
 
     input.armPosition = armMotor1.getCurrentPosition();
     input.wheelPosition = leftFront.getCurrentPosition();
@@ -103,6 +85,8 @@ public abstract class BaseOp2023 extends LinearOpMode {
 
     return input;
   }
+
+  public Output compute() { return new Output(); }
 
   private void setOutputs(Output output) {
     output.telemetry.forEach((tele) -> telemetry.addData(tele.name, tele.value));
@@ -122,9 +106,4 @@ public abstract class BaseOp2023 extends LinearOpMode {
 
     droneLauncher.setPosition(output.launcherPosition);
   }
-  protected abstract Output compute(Compute compute);
-
-  protected abstract void setupCompute();
-
-  protected abstract void typeSpecificInit();
 }

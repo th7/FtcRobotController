@@ -12,7 +12,7 @@ An extremely generic term for a word in your code. Will most commonly be encount
 <details>
 <summary>scope</summary>
 
-Generally refers to a section of code. The "scope" in which a piece of code is written determines which symbols can resolved in that code.
+Generally refers to a section of code. The "scope" in which a piece of code is written determines which symbols can be resolved in that code.
 </details>
 
 <details>
@@ -46,7 +46,7 @@ A type might also be a class that comes from the Java language itself, a class f
 <details>
 <summary>access modifier</summary>
 
-An access modifier describes where a class or method can be used by other code.
+An access modifier describes where a class, method, or field can be used by other code.
 Most commonly, this will be `private` or `public`. A `private` method can only be called from within the class that defines the method. A `public` method can be called from outside the class.
 </details>
 
@@ -54,6 +54,12 @@ Most commonly, this will be `private` or `public`. A `private` method can only b
 <summary>constructor</summary>
 
 A constructor is sort of like a special method that creates a new instance of a class. It uses the name of the class in its definition.
+</details>
+
+<details>
+<summary>instance</summary>
+
+Commonly created by the `new` keyword and a constructor. Each instance has its own fields that can change independently of each other.
 </details>
 
 <details>
@@ -121,7 +127,7 @@ class Seuss {
 ```
 <details>
 
-This block adds a `public` method which returns nothing, is named `redFish`, and takes no arguments. It does, however, increase the value of the private field `thing2` by 1. This is an example of a `public` method can allow code outside the class to change a `private` field in limited ways.
+This block adds a `public` method which returns nothing, is named `redFish`, and takes no arguments. It does, however, increase the value of the private field `thing2` by 1. This is an example of how a `public` method can allow code outside the class to change a `private` field in limited ways.
 </details>
 
 ---

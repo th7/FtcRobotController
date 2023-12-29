@@ -5,7 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous(name="FrontStageBlue2023", group="Autonomous")
 public class FrontStageBlue2023 extends BaseAutoOp2023 {
     @Override
-    protected void setupCompute() {
+    public void init() {
+        super.init();
         compute.stateMachine = compute.frontStageBlue();
     }
 }

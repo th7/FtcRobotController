@@ -38,7 +38,7 @@ public class Compute {
 
     output.topClawPosition = memory.topClawPosition;
     output.bottomClawPosition = memory.bottomClawPosition;
-    output.armMotorPower = autoArmPower(input.armPosition);
+    output.armMotorPower = autoArmPower();
     output.movement = stateMachine.movement();
 
     output.addTel("targetMovePosition", memory.targetMovePosition);
@@ -58,11 +58,11 @@ public class Compute {
   public Output teleOp() {
     Output output = new Output();
 
-    output.armMotorPower = arm(input.dPadUp, input.dPadDown, input.armPosition);
-    output.movement = manualDrive(input.gameStickRightX, input.gameStickLeftY, input.gameStickLeftX);
-    output.winchMotorPower = winch(input.triangle, input.cross);
+    output.armMotorPower = arm();
+    output.movement = manualDrive();
+    output.winchMotorPower = winch();
 
-    manualClaw(input.leftBumper, input.rightBumper, input.leftTrigger, input.rightTrigger);
+    manualClaw();
     output.topClawPosition = memory.topClawPosition;
     output.bottomClawPosition = memory.bottomClawPosition;
 
@@ -210,7 +210,7 @@ public class Compute {
   public State turnState(double angle) {
     return new State(
             () -> turn(angle),
-            () -> autoTurn(input.yaw, memory.targetAngle, 1d),
+            () -> autoTurn(1d),
             () -> closeEnough(input.yaw, memory.targetAngle, 1)
     );
   }
@@ -229,84 +229,70 @@ public class Compute {
   }
 
   private Output.Movement driveMovement() {
-    Output.Movement turnMovement = autoTurn(input.yaw, memory.targetAngle, 5d);
-    Output.Movement moveMovement = autoMove(input.wheelPosition, memory.targetMovePosition);
+    Output.Movement turnMovement = autoTurn(5d);
+    Output.Movement moveMovement = autoMove();
 
-    return turnMovement.add(moveMovement).clip(1f);
+    return turnMovement.add(0f, 1f, moveMovement);
   }
 
-  private Output.Movement manualDrive(float gameStickRightX, float gameStickLeftY, float gameStickLeftX) {
-    Output.Movement turnMovement = manualTurn(gameStickRightX);
-    Output.Movement moveMovement = manualMove(gameStickLeftY);
-    Output.Movement strafeMovement = manualStrafe(gameStickLeftX);
-
-    return turnMovement.add(moveMovement, strafeMovement).clip(1f);
+  private Output.Movement manualDrive() {
+    return manualTurn().add(0f, 1f, manualMove(), manualStrafe());
   }
 
-  private void manualClaw(boolean leftBumper, boolean rightBumper, float leftTrigger, float rightTrigger) {
-    if (rightBumper) {
+  private void manualClaw() {
+    if (input.rightBumper) {
       memory.topClawPosition = clawClosed;
     }
-    if (leftBumper) {
+    if (input.leftBumper) {
       memory.topClawPosition = clawOpen;
     }
-    if (rightTrigger > 0) {
+    if (input.rightTrigger > 0) {
       memory.bottomClawPosition = clawClosed;
     }
-    if (leftTrigger > 0) {
+    if (input.leftTrigger > 0) {
       memory.bottomClawPosition = clawOpen;
     }
   }
 
-  private Output.Movement autoMove(int wheelPosition, int targetMovePosition) {
-    Output.Movement movement = new Output.Movement();
+  private Output.Movement autoMove() {
+    int distanceToMove = memory.targetMovePosition - input.wheelPosition;
+    float power = (float) distanceToMove / 200f;
 
-    int distanceToMove = targetMovePosition - wheelPosition;
-    float power = autoMinimum(autoClip((float) distanceToMove / 200f));
-
-    movement.frontLeftPower = power;
-    movement.frontRightPower = power;
-    movement.rearLeftPower = power;
-    movement.rearRightPower = power;
-
-    return movement;
+    return Output.Movement.move(power, 0.05f, 0.6f);
   }
 
-  private Output.Movement autoTurn(double yaw, double targetAngle, double gain) {
-    Output.Movement movement = new Output.Movement();
+  private Output.Movement autoTurn(double gain) {
+    double distanceToTurn = memory.targetAngle - input.yaw;
+    double shortDistanceToTurn;
 
-    double distanceToTurn = targetAngle - yaw;
-    float power = autoMinimum(autoClip((float) (distanceToTurn * gain / 90d)));
-
-    if (Math.abs(distanceToTurn) > 180) {
-      movement.frontLeftPower = power;
-      movement.frontRightPower = -power;
-      movement.rearLeftPower = power;
-      movement.rearRightPower = -power;
+    if (distanceToTurn > 180) {
+      shortDistanceToTurn = distanceToTurn - 360;
+    } else if (distanceToTurn < -180) {
+      shortDistanceToTurn = distanceToTurn + 360;
     } else {
-      movement.frontLeftPower = -power;
-      movement.frontRightPower = power;
-      movement.rearLeftPower = -power;
-      movement.rearRightPower = power;
+      shortDistanceToTurn = distanceToTurn;
     }
-    return movement;
+
+    float power = (float) (shortDistanceToTurn * gain / 90d);
+
+    return Output.Movement.turn(power, 0.05f, 0.6f);
   }
 
-  private Output.Movement manualTurn(float gameStickRightX) {
+  private Output.Movement manualTurn() {
 //    Output.Movement movement = new Output.Movement();
 //    movement.frontLeftPower = gameStickRightX;
 //    movement.frontRightPower = -gameStickRightX;
 //    movement.rearLeftPower = gameStickRightX;
 //    movement.rearRightPower = -gameStickRightX;
 //    return movement;
-    return new Output.Movement().turn(gameStickRightX);
+    return Output.Movement.turn(input.gameStickRightX, 0f, 1f);
   }
 
-  private Output.Movement manualMove(float gameStickLeftY) {
-    return new Output.Movement().move(-gameStickLeftY);
+  private Output.Movement manualMove() {
+    return Output.Movement.move(-input.gameStickLeftY, 0f, 1f);
   }
 
-  private Output.Movement manualStrafe(float gameStickLeftX) {
+  private Output.Movement manualStrafe() {
 //    Output.Movement movement = new Output.Movement();
 //    movement.frontLeftPower = -gameStickLeftX;
 //    movement.frontRightPower = gameStickLeftX;
@@ -314,16 +300,16 @@ public class Compute {
 //    movement.rearRightPower = -gameStickLeftX;
 //
 //    return movement;
-    return new Output.Movement().strafe(gameStickLeftX);
+    return Output.Movement.strafe(input.gameStickLeftX, 0f, 1f);
   }
 
-  private float arm(boolean dPadUp, boolean dPadDown, int armPosition) {
-    if (dPadUp) {
+  private float arm() {
+    if (input.dPadUp) {
       memory.autoMoveArm = false;
       return 0.25f;
     }
 
-    if (dPadDown) {
+    if (input.dPadDown) {
       memory.autoMoveArm = false;
       return -0.25f;
     }
@@ -332,59 +318,39 @@ public class Compute {
       return 0f;
     }
 
-    return autoArmPower(armPosition);
+    return autoArmPower();
   }
 
-  public float autoArmPower(int armPosition) {
-    if (armPosition < memory.targetArmPosition && memory.targetArmPosition - armPosition <= armSlowThreshold) {
+  public float autoArmPower() {
+    if (input.armPosition < memory.targetArmPosition && memory.targetArmPosition - input.armPosition <= armSlowThreshold) {
       return armSlow;
     }
 
-    if (armPosition > memory.targetArmPosition && armPosition - memory.targetArmPosition <= armSlowThreshold) {
+    if (input.armPosition > memory.targetArmPosition && input.armPosition - memory.targetArmPosition <= armSlowThreshold) {
       return -armSlow;
     }
 
-    if (armPosition < memory.targetArmPosition) {
+    if (input.armPosition < memory.targetArmPosition) {
       return armFast;
     }
 
-    if (armPosition > memory.targetArmPosition) {
+    if (input.armPosition > memory.targetArmPosition) {
       return -armFast;
     }
 
     return 0f;
   }
 
-  private float winch(boolean triangle, boolean cross) {
-    if (triangle) {
+  private float winch() {
+    if (input.triangle) {
       return 1f;
     }
 
-    if (cross) {
+    if (input.cross) {
       return -1f;
     }
 
     return 0f;
-  }
-
-  private float autoClip(float unclipped) {
-    if (unclipped < -0.6f) {
-      return -0.6f;
-    }
-
-    return Math.min(unclipped, 0.6f);
-  }
-
-  private float autoMinimum(float power) {
-    if (-0.05 < power && power < 0) {
-      return -0.05f;
-    }
-
-    if (0 < power && power < 0.05) {
-      return 0.05f;
-    }
-
-    return power;
   }
 
   private boolean closeEnough(double a, double b, int threshold) {
