@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class BaseAutoOp2023 extends BaseOp2023 {
+    Plan plan = new Plan(compute);
     @Override
     public void init() {
         super.init();

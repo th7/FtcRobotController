@@ -7,7 +7,7 @@ public class BackStageRed2023 extends BaseAutoOp2023 {
     @Override
     public void init() {
         super.init();
-        compute.stateMachine = compute.backStageRed();
+        compute.stateMachine = plan.backStageRed();
     }
 }
 

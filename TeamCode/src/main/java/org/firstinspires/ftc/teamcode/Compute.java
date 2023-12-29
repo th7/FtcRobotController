@@ -93,142 +93,20 @@ public class Compute {
     return output;
   }
 
-  public LinearStateMachine teamProp() {
-    return new LinearStateMachine(
-            closeClawsState(),
-            moveToSpikeMarks(),
-            openBottomClawState(),
-            moveBackFromSpikeMarks()
-    );
-  }
-
-  public LinearStateMachine backstage(double turn) {
-    return new LinearStateMachine(
-            teamProp(),
-
-            turnState(turn),
-            toBackStageShort(),
-            openTopClawState(),
-            nudgeBack()
-    );
-  }
-
-  public LinearStateMachine frontStage(int turnDirection) {
-    return new LinearStateMachine(
-            teamProp(),
-
-            turnState(-90 * turnDirection),
-            moveToWing(),
-            turnState(90 * turnDirection),
-            wingToMiddle(),
-            turnState(45 * turnDirection),
-            moveToMiddle(),
-            turnState(45 * turnDirection),
-            moveBackStageLong(),
-            openTopClawState(),
-            nudgeBack()
-    );
-  }
-
-  public LinearStateMachine backStageRed() {
-    return backstage(turnRight);
-  }
-
-  public LinearStateMachine backStageBlue() {
-    return backstage(turnLeft);
-  }
-
-  public LinearStateMachine frontStageRed() {
-    return frontStage(1);
-  }
-
-  public LinearStateMachine frontStageBlue() {
-    return frontStage(-1);
-  }
-
-  public State closeClawsState() {
-    return new State(
-            () -> { closeClaws(); waitFor(0.6); },
-            () -> input.elapsedSeconds > memory.targetWaitSeconds
-    );
-  }
-
-  private State moveToSpikeMarks() {
-    return moveState(oneTile * 1.3);
-  }
-
-  private State openBottomClawState() {
-    return new State(
-            () -> { openBottomClaw(); waitFor(0.6); },
-            () -> input.elapsedSeconds > memory.targetWaitSeconds
-    );
-  }
-
-  private State moveBackFromSpikeMarks() {
-    return moveState(-oneTile * 0.9);
-  }
-
-  private Stateful toBackStageShort() {
-    return moveState(oneTile * 1.8);
-  }
-
-  private Stateful moveToWing() {
-    return moveState(oneTile * 0.8);
-  }
-
-  private Stateful wingToMiddle() {
-    return moveState(oneTile * 1.7);
-  }
-
-  private Stateful moveToMiddle() {
-    return moveState(oneTile * 0.8);
-  }
-
-  private Stateful moveBackStageLong() {
-    return moveState(oneTile * 4);
-  }
-
-  private Stateful openTopClawState() {
-    return new State(
-            () -> { openTopClaw(); waitFor(0.6); },
-            () -> input.elapsedSeconds > memory.targetWaitSeconds
-    );
-  }
-
-  private Stateful nudgeBack() {
-    return moveState(-oneTile * 0.2);
-  }
-
-  public State moveState(double distance) {
-    return new State(
-            () -> move(distance),
-            this::driveMovement,
-            () -> closeEnough(input.wheelPosition, memory.targetMovePosition, 8)
-    );
-  }
-
-  public State turnState(double angle) {
-    return new State(
-            () -> turn(angle),
-            () -> autoTurn(1d),
-            () -> closeEnough(input.yaw, memory.targetAngle, 1)
-    );
-  }
-
-  private void closeClaws() {
+  public void closeClaws() {
     memory.topClawPosition = clawClosed;
     memory.bottomClawPosition = clawClosed;
   }
 
-  private void openBottomClaw() {
+  public void openBottomClaw() {
     memory.bottomClawPosition = clawOpen;
   }
 
-  private void openTopClaw() {
+  public void openTopClaw() {
     memory.topClawPosition = clawOpen;
   }
 
-  private Output.Movement driveMovement() {
+  public Output.Movement driveMovement() {
     Output.Movement turnMovement = autoTurn(5d);
     Output.Movement moveMovement = autoMove();
 
@@ -261,7 +139,7 @@ public class Compute {
     return Output.Movement.move(power, 0.05f, 0.6f);
   }
 
-  private Output.Movement autoTurn(double gain) {
+  public Output.Movement autoTurn(double gain) {
     double distanceToTurn = memory.targetAngle - input.yaw;
     double shortDistanceToTurn;
 
@@ -279,12 +157,6 @@ public class Compute {
   }
 
   private Output.Movement manualTurn() {
-//    Output.Movement movement = new Output.Movement();
-//    movement.frontLeftPower = gameStickRightX;
-//    movement.frontRightPower = -gameStickRightX;
-//    movement.rearLeftPower = gameStickRightX;
-//    movement.rearRightPower = -gameStickRightX;
-//    return movement;
     return Output.Movement.turn(input.gameStickRightX, 0f, 1f);
   }
 
@@ -293,13 +165,6 @@ public class Compute {
   }
 
   private Output.Movement manualStrafe() {
-//    Output.Movement movement = new Output.Movement();
-//    movement.frontLeftPower = -gameStickLeftX;
-//    movement.frontRightPower = gameStickLeftX;
-//    movement.rearLeftPower = gameStickLeftX;
-//    movement.rearRightPower = -gameStickLeftX;
-//
-//    return movement;
     return Output.Movement.strafe(input.gameStickLeftX, 0f, 1f);
   }
 
@@ -380,5 +245,17 @@ public class Compute {
 
   public void waitFor(double waitSeconds) {
     memory.targetWaitSeconds = input.elapsedSeconds + waitSeconds;
+  }
+
+  public boolean waitComplete() {
+    return input.elapsedSeconds > memory.targetWaitSeconds;
+  }
+
+  public boolean moveCloseEnough() {
+    return closeEnough(input.wheelPosition, memory.targetMovePosition, 8);
+  }
+
+  public boolean turnCloseEnough() {
+    return closeEnough(input.yaw, memory.targetAngle, 1);
   }
 }
