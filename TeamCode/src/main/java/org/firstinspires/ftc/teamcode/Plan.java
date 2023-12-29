@@ -13,38 +13,10 @@ public class Plan {
 
     public LinearStateMachine teamProp() {
         return new LinearStateMachine(
-                closeClawsState(),
+                closeClaws(),
                 moveToSpikeMarks(),
-                openBottomClawState(),
+                openBottomClaw(),
                 moveBackFromSpikeMarks()
-        );
-    }
-
-    public LinearStateMachine backstage(double turn) {
-        return new LinearStateMachine(
-                teamProp(),
-
-                turnState(turn),
-                toBackStageShort(),
-                openTopClawState(),
-                nudgeBack()
-        );
-    }
-
-    public LinearStateMachine frontStage(int turnDirection) {
-        return new LinearStateMachine(
-                teamProp(),
-
-                turnState(-90 * turnDirection),
-                moveToWing(),
-                turnState(90 * turnDirection),
-                wingToMiddle(),
-                turnState(45 * turnDirection),
-                moveToMiddle(),
-                turnState(45 * turnDirection),
-                moveBackStageLong(),
-                openTopClawState(),
-                nudgeBack()
         );
     }
 
@@ -64,10 +36,38 @@ public class Plan {
         return frontStage(-1);
     }
 
-    private State closeClawsState() {
+    private LinearStateMachine backstage(double turn) {
+        return new LinearStateMachine(
+                teamProp(),
+
+                turn(turn),
+                moveBackStageShort(),
+                openTopClaw(),
+                nudgeBack()
+        );
+    }
+
+    private LinearStateMachine frontStage(int turnDirection) {
+        return new LinearStateMachine(
+                teamProp(),
+
+                turn(-90 * turnDirection),
+                moveToWing(),
+                turn(90 * turnDirection),
+                wingToMiddle(),
+                turn(45 * turnDirection),
+                moveToMiddle(),
+                turn(45 * turnDirection),
+                moveBackStageLong(),
+                openTopClaw(),
+                nudgeBack()
+        );
+    }
+
+    private State closeClaws() {
         return new State(
-                () -> { compute.closeClaws(); compute.waitFor(0.6); },
-                compute::waitComplete//input.elapsedSeconds > memory.targetWaitSeconds
+                compute::closeClaws,
+                compute::clawComplete
         );
     }
 
@@ -75,10 +75,10 @@ public class Plan {
         return moveTiles(1.3);
     }
 
-    private State openBottomClawState() {
+    private State openBottomClaw() {
         return new State(
-                () -> { compute.openBottomClaw(); compute.waitFor(0.6); },
-                compute::waitComplete
+                compute::openBottomClaw,
+                compute::clawComplete
         );
     }
 
@@ -86,7 +86,7 @@ public class Plan {
         return moveTiles(0.9);
     }
 
-    private Stateful toBackStageShort() {
+    private Stateful moveBackStageShort() {
         return moveTiles(1.8);
     }
 
@@ -106,10 +106,10 @@ public class Plan {
         return moveTiles(4);
     }
 
-    private Stateful openTopClawState() {
+    private Stateful openTopClaw() {
         return new State(
-                () -> { compute.openTopClaw(); compute.waitFor(0.6); },
-                compute::waitComplete
+                compute::openTopClaw,
+                compute::clawComplete
         );
     }
 
@@ -117,23 +117,23 @@ public class Plan {
         return moveTiles(-0.2);
     }
 
-    private State moveState(double distance) {
+    private State move(double distance) {
         return new State(
                 () -> compute.move(distance),
                 compute::driveMovement,
-                compute::moveCloseEnough
+                compute::moveComplete
         );
     }
 
     private State moveTiles(double tiles) {
-        return moveState(compute.oneTile * tiles);
+        return move(compute.oneTile * tiles);
     }
 
-    private State turnState(double angle) {
+    private State turn(double angle) {
         return new State(
                 () -> compute.turn(angle),
                 () -> compute.autoTurn(1d),
-                compute::turnCloseEnough
+                compute::turnComplete
         );
     }
 }

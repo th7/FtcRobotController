@@ -6,6 +6,7 @@ public class Memory {
   public int targetMovePosition = 0;
   public double targetAngle = 0;
   public double targetWaitSeconds = -1d;
+  public double clawMoveStartedSeconds = -1d;
   public double topClawPosition = 0d;
   public double bottomClawPosition = 0d;
 }
