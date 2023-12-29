@@ -4,27 +4,27 @@ import org.firstinspires.ftc.teamcode.Output;
 
 import java.util.ArrayList;
 
-public class LinearStateMachine implements Stateful {
-    private final ArrayList<Stateful> states = new ArrayList<>();
+public class Plan implements PlanPart {
+    private final ArrayList<PlanPart> states = new ArrayList<>();
     private int currentStateIndex = 0;
 
-    public LinearStateMachine(Stateful... all) {
+    public Plan(PlanPart... all) {
         addAll(all);
     }
-    public void add(Stateful stateful) {
-        states.add(stateful);
+    public void add(PlanPart planPart) {
+        states.add(planPart);
     }
 
-    public void addAll(Stateful... all) {
-        for (Stateful stateful : all) {
-            add(stateful);
+    public void addAll(PlanPart... all) {
+        for (PlanPart planPart : all) {
+            add(planPart);
         }
     }
 
     @Override
     public boolean done() {
         try {
-            Stateful currentState = states.get(currentStateIndex);
+            PlanPart currentState = states.get(currentStateIndex);
             if (currentState.done()) {
                 currentStateIndex += 1;
             }
@@ -36,7 +36,7 @@ public class LinearStateMachine implements Stateful {
 
     public Output.Movement movement() {
         try {
-            Stateful currentState = states.get(currentStateIndex);
+            PlanPart currentState = states.get(currentStateIndex);
             return currentState.movement();
         } catch(IndexOutOfBoundsException e) {
             return new Output.Movement();

@@ -1,18 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 
-import org.firstinspires.ftc.teamcode.state.utils.LinearStateMachine;
-import org.firstinspires.ftc.teamcode.state.utils.State;
-import org.firstinspires.ftc.teamcode.state.utils.Stateful;
+import org.firstinspires.ftc.teamcode.state.utils.Plan;
+import org.firstinspires.ftc.teamcode.state.utils.Step;
+import org.firstinspires.ftc.teamcode.state.utils.PlanPart;
 
-public class Plan {
+public class Plans {
     private final Compute compute;
 
-    Plan(Compute compute) {
+    Plans(Compute compute) {
         this.compute = compute;
     }
 
-    public LinearStateMachine teamProp() {
-        return new LinearStateMachine(
+    public Plan teamProp() {
+        return new Plan(
                 closeClaws(),
                 moveToSpikeMarks(),
                 openBottomClaw(),
@@ -20,24 +20,24 @@ public class Plan {
         );
     }
 
-    public LinearStateMachine backStageRed() {
+    public Plan backStageRed() {
         return backstage(compute.turnRight);
     }
 
-    public LinearStateMachine backStageBlue() {
+    public Plan backStageBlue() {
         return backstage(compute.turnLeft);
     }
 
-    public LinearStateMachine frontStageRed() {
+    public Plan frontStageRed() {
         return frontStage(1);
     }
 
-    public LinearStateMachine frontStageBlue() {
+    public Plan frontStageBlue() {
         return frontStage(-1);
     }
 
-    private LinearStateMachine backstage(double turn) {
-        return new LinearStateMachine(
+    private Plan backstage(double turn) {
+        return new Plan(
                 teamProp(),
 
                 turn(turn),
@@ -47,8 +47,8 @@ public class Plan {
         );
     }
 
-    private LinearStateMachine frontStage(int turnDirection) {
-        return new LinearStateMachine(
+    private Plan frontStage(int turnDirection) {
+        return new Plan(
                 teamProp(),
 
                 turn(-90 * turnDirection),
@@ -64,73 +64,73 @@ public class Plan {
         );
     }
 
-    private State closeClaws() {
-        return new State(
+    private Step closeClaws() {
+        return new Step(
                 compute::closeClaws,
                 compute::clawComplete
         );
     }
 
-    private State moveToSpikeMarks() {
+    private Step moveToSpikeMarks() {
         return moveTiles(1.3);
     }
 
-    private State openBottomClaw() {
-        return new State(
+    private Step openBottomClaw() {
+        return new Step(
                 compute::openBottomClaw,
                 compute::clawComplete
         );
     }
 
-    private State moveBackFromSpikeMarks() {
+    private Step moveBackFromSpikeMarks() {
         return moveTiles(0.9);
     }
 
-    private Stateful moveBackStageShort() {
+    private PlanPart moveBackStageShort() {
         return moveTiles(1.8);
     }
 
-    private Stateful moveToWing() {
+    private PlanPart moveToWing() {
         return moveTiles(0.8);
     }
 
-    private Stateful wingToMiddle() {
+    private PlanPart wingToMiddle() {
         return moveTiles(1.7);
     }
 
-    private Stateful moveToMiddle() {
+    private PlanPart moveToMiddle() {
         return moveTiles(0.8);
     }
 
-    private Stateful moveBackStageLong() {
+    private PlanPart moveBackStageLong() {
         return moveTiles(4);
     }
 
-    private Stateful openTopClaw() {
-        return new State(
+    private PlanPart openTopClaw() {
+        return new Step(
                 compute::openTopClaw,
                 compute::clawComplete
         );
     }
 
-    private Stateful nudgeBack() {
+    private PlanPart nudgeBack() {
         return moveTiles(-0.2);
     }
 
-    private State move(double distance) {
-        return new State(
+    private Step move(double distance) {
+        return new Step(
                 () -> compute.move(distance),
                 compute::driveMovement,
                 compute::moveComplete
         );
     }
 
-    private State moveTiles(double tiles) {
+    private Step moveTiles(double tiles) {
         return move(compute.oneTile * tiles);
     }
 
-    private State turn(double angle) {
-        return new State(
+    private Step turn(double angle) {
+        return new Step(
                 () -> compute.turn(angle),
                 () -> compute.autoTurn(1d),
                 compute::turnComplete

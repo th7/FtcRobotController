@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.state.utils.Stateful;
+import org.firstinspires.ftc.teamcode.state.utils.PlanPart;
 
 public class BaseAutoOp2023 extends BaseOp2023 {
-    public Stateful stateMachine;
-    public Plan plan = new Plan(compute);
+    public PlanPart chosenPlan;
+    public Plans plans = new Plans(compute);
 
     @Override
     public void init() {
@@ -25,7 +25,7 @@ public class BaseAutoOp2023 extends BaseOp2023 {
     public Output compute() {
         Output output = new Output();
 
-        if (stateMachine.done()) {
+        if (chosenPlan.done()) {
             output.addTel("done", true);
             return output;
         }
@@ -33,7 +33,7 @@ public class BaseAutoOp2023 extends BaseOp2023 {
         output.topClawPosition = memory.topClawPosition;
         output.bottomClawPosition = memory.bottomClawPosition;
         output.armMotorPower = compute.autoArmPower();
-        output.movement = stateMachine.movement();
+        output.movement = chosenPlan.movement();
 
         output.addTel("targetMovePosition", memory.targetMovePosition);
         output.addTel("wheelPosition", compute.input.wheelPosition);
