@@ -5,13 +5,13 @@ import org.firstinspires.ftc.teamcode.state.utils.Step;
 import org.firstinspires.ftc.teamcode.state.utils.PlanPart;
 
 public class Plans {
-    private final Compute compute;
     private final AutoArmController armController;
     private final AutoMoveController moveController;
     private final AutoClawController clawController;
 
-    Plans(Compute compute, AutoArmController armController, AutoMoveController moveController, AutoClawController clawController) {
-        this.compute = compute;
+    public static final double oneTile = 1195d;
+
+    Plans(AutoArmController armController, AutoMoveController moveController, AutoClawController clawController) {
         this.armController = armController;
         this.moveController = moveController;
         this.clawController = clawController;
@@ -33,11 +33,11 @@ public class Plans {
     }
 
     public PlanPart backStageRed() {
-        return backstage(compute.turnRight);
+        return backstage(1);
     }
 
     public PlanPart backStageBlue() {
-        return backstage(compute.turnLeft);
+        return backstage(-1);
     }
 
     public PlanPart frontStageRed() {
@@ -48,11 +48,11 @@ public class Plans {
         return frontStage(-1);
     }
 
-    private PlanPart backstage(double turn) {
+    private PlanPart backstage(int turnDirection) {
         return new Plan(
                 teamProp(),
 
-                turn(turn),
+                turn(90d * turnDirection),
                 moveBackStageShort(),
                 openTopClaw(),
                 nudgeBack()
@@ -63,13 +63,13 @@ public class Plans {
         return new Plan(
                 teamProp(),
 
-                turn(-90 * turnDirection),
+                turn(-90d * turnDirection),
                 moveToWing(),
-                turn(90 * turnDirection),
+                turn(90d * turnDirection),
                 wingToMiddle(),
-                turn(45 * turnDirection),
+                turn(45d * turnDirection),
                 moveToMiddle(),
-                turn(45 * turnDirection),
+                turn(45d * turnDirection),
                 moveBackStageLong(),
                 openTopClaw(),
                 nudgeBack()
@@ -137,7 +137,7 @@ public class Plans {
     }
 
     private PlanPart moveTiles(double tiles) {
-        return move(compute.oneTile * tiles);
+        return move(oneTile * tiles);
     }
 
     private PlanPart turn(double angle) {

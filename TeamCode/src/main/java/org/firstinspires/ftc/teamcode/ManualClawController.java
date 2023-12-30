@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class ManualClawController implements Tickable {
+public class ManualClawController {
     private final Servo topClaw;
     private final Servo bottomClaw;
     private final Gamepad gamepad;

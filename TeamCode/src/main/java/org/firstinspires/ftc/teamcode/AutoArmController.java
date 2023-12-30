@@ -4,14 +4,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class AutoArmController implements Tickable {
+public class AutoArmController {
     private final DcMotor armMotor1;
     private final DcMotor armMotor2;
     private final Telemetry telemetry;
 
     private static final int straightUpPosition = 200;
 
-    private int targetPosition;
+    private int targetPosition = 0;
 
     AutoArmController(DcMotor armMotor1, DcMotor armMotor2, Telemetry telemetry) {
         this.armMotor1 = armMotor1;
@@ -28,10 +28,10 @@ public class AutoArmController implements Tickable {
     }
 
     public boolean inProgress() {
-        return false;
+        return Util.closeEnough(this.targetPosition, armMotor1.getCurrentPosition(), 8);
     }
 
     public void straightUp() {
-        this.targetPosition = this.straightUpPosition;
+        this.targetPosition = straightUpPosition;
     }
 }

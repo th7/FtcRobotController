@@ -8,9 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-public class BaseOp2023 extends OpMode {
-  Memory memory = new Memory();
-  Compute compute = new Compute(memory);
+public abstract class BaseOp2023 extends OpMode {
   final ElapsedTime runtime = new ElapsedTime();
   DcMotor leftFront = null;
   DcMotor rightFront = null;
@@ -52,7 +50,7 @@ public class BaseOp2023 extends OpMode {
     droneLauncher = hardwareMap.get(Servo.class, "DroneLaunch");
 
     droneLauncher.setDirection(Servo.Direction.REVERSE);
-    droneLauncher.setPosition(new Output().launcherPosition);
+    droneLauncher.setPosition(ManualDroneController.initialPosition);
   }
 
   @Override

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-public class AutoMoveController implements Tickable {
+public class AutoMoveController {
     enum Mode {
         DRIVE_STRAIGHT, TURN
     }
@@ -56,7 +56,7 @@ public class AutoMoveController implements Tickable {
 
     public boolean inProgress() {
         switch (mode) {
-            case DRIVE_STRAIGHT: driveStraightInProgress();
+            case DRIVE_STRAIGHT: return driveStraightInProgress();
             case TURN: return turnInProgress();
             default: return false;
         }
@@ -94,8 +94,7 @@ public class AutoMoveController implements Tickable {
     }
 
     private boolean closeEnough(double a, double b, int threshold) {
-        double difference = Math.abs(a - b);
-        return difference <= threshold;
+        return Util.closeEnough(a,b,threshold);
     }
 
     private Output.Movement driveStraight() {

@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class ManualArmController implements Tickable {
+public class ManualArmController {
     private final DcMotor armMotor1;
     private final DcMotor armMotor2;
     private final Gamepad gamepad;

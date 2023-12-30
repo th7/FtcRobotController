@@ -34,7 +34,6 @@ public class BaseAutoOp2023 extends BaseOp2023 {
                 runtime,
                 telemetry);
         plans = new Plans(
-                compute,
                 armController,
                 moveController,
                 clawController);

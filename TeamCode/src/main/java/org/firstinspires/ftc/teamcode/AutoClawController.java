@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class AutoClawController implements Tickable {
+public class AutoClawController {
     private final Servo topClaw;
     private final Servo bottomClaw;
     private final ElapsedTime runtime;

@@ -5,12 +5,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class ManualDroneController implements Tickable {
+public class ManualDroneController {
+    public static final double initialPosition = 0.4d;
     private final Servo droneServo;
     private final Gamepad gamepad;
     private final Telemetry telemetry;
 
-    private double launcherPosition = 0.4d;
+    private double launcherPosition = initialPosition;
 
     public ManualDroneController(Servo droneServo, Gamepad gamepad, Telemetry telemetry) {
         this.droneServo = droneServo;

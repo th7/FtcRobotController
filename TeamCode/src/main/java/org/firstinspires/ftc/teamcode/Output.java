@@ -3,14 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import java.util.ArrayList;
 
 public class Output {
-  public float winchMotorPower = 0f;
-  public float armMotorPower = 0f;
-  public double topClawPosition = 0d;
-  public double bottomClawPosition = 0d;
-  public double launcherPosition = 0.4d;
-  public Movement movement = new Movement();
-  public ArrayList<Telemetry> telemetry = new ArrayList<>();
-
   public static class Movement {
     public float frontLeftPower = 0f;
     public float frontRightPower = 0f;
@@ -115,18 +107,5 @@ public class Output {
 
       return unmin;
     }
-  }
-  public static class Telemetry {
-    public String name;
-    public Object value;
-
-    Telemetry(String name, Object value) {
-      this.name = name;
-      this.value = value;
-    }
-  }
-
-  public void addTel(String name, Object value) {
-    telemetry.add(new Telemetry(name, value));
   }
 }
