@@ -41,6 +41,7 @@ public class BaseAutoOp2023 extends BaseOp2023 {
     @Override
     public void loop() {
         plans.tick();
+        chosenPlan.done();
         telemetry.update();
     }
 }

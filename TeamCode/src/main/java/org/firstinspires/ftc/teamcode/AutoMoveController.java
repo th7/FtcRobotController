@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class AutoMoveController {
     enum Mode {
-        DRIVE_STRAIGHT, TURN
+        DRIVE_STRAIGHT, TURN, NONE
     }
     private final DcMotor leftFront;
     private final DcMotor rightFront;
@@ -18,7 +18,7 @@ public class AutoMoveController {
     private final Telemetry telemetry;
     private int targetPosition;
     private double targetHeading;
-    private Mode mode;
+    private Mode mode = Mode.NONE;
     private boolean inProgress;
 
     public AutoMoveController(DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, IMU imu, Telemetry telemetry) {
@@ -62,6 +62,10 @@ public class AutoMoveController {
         }
     }
 
+    public boolean done() {
+        return !inProgress();
+    }
+
     public void moveStraight(int distance) {
         this.mode = Mode.DRIVE_STRAIGHT;
         this.targetPosition = position() + distance;
@@ -83,13 +87,13 @@ public class AutoMoveController {
 
     private boolean driveStraightInProgress() {
         boolean done = closeEnough(position(), this.targetPosition, 8);
-        if (done) { this.mode = null; }
+        if (done) { this.mode = Mode.NONE; }
         return !done;
     }
 
     public boolean turnInProgress() {
         boolean done = closeEnough(yaw(), this.targetHeading, 1);
-        if (done) { this.mode = null; }
+        if (done) { this.mode = Mode.NONE; }
         return !done;
     }
 

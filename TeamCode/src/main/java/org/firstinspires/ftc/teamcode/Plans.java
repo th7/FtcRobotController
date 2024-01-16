@@ -79,7 +79,7 @@ public class Plans {
     private PlanPart closeClaws() {
         return new Step(
                 clawController::closeClaws,
-                clawController::inProgress
+                clawController::done
         );
     }
 
@@ -90,12 +90,12 @@ public class Plans {
     private PlanPart openBottomClaw() {
         return new Step(
                 clawController::openBottomClaw,
-                clawController::inProgress
+                clawController::done
         );
     }
 
     private PlanPart moveBackFromSpikeMarks() {
-        return moveTiles(0.9);
+        return moveTiles(-0.9);
     }
 
     private PlanPart moveBackStageShort() {
@@ -121,7 +121,7 @@ public class Plans {
     private PlanPart openTopClaw() {
         return new Step(
                 clawController::openTopClaw,
-                clawController::inProgress
+                clawController::done
         );
     }
 
@@ -132,7 +132,7 @@ public class Plans {
     private PlanPart move(double distance) {
         return new Step(
                 () -> moveController.moveStraight((int) distance),
-                moveController::inProgress
+                moveController::done
         );
     }
 
@@ -143,7 +143,7 @@ public class Plans {
     private PlanPart turn(double angle) {
         return new Step(
                 () -> moveController.turn(angle),
-                moveController::inProgress
+                moveController::done
         );
     }
 }

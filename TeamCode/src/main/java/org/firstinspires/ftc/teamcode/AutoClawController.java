@@ -31,6 +31,7 @@ public class AutoClawController {
         bottomClaw.setPosition(this.bottomClawPosition);
         telemetry.addData("topClawPosition", this.topClawPosition);
         telemetry.addData("bottomClawPosition", this.bottomClawPosition);
+        telemetry.addData("ClawDone", this.done());
     }
 
     public boolean inProgress() {
@@ -51,5 +52,9 @@ public class AutoClawController {
     public void openTopClaw() {
         this.topClawPosition = clawOpen;
         this.clawMoveStartedSeconds = runtime.seconds();
+    }
+
+    public boolean done() {
+        return !inProgress();
     }
 }
