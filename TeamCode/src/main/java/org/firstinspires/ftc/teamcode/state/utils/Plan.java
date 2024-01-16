@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Plan implements PlanPart {
     private final ArrayList<PlanPart> states = new ArrayList<>();
-    private int currentStateIndex = 0;
+    private int currentPlanPartIndex = 0;
 
     public Plan(PlanPart... all) {
         addAll(all);
@@ -24,9 +24,9 @@ public class Plan implements PlanPart {
     @Override
     public boolean done() {
         try {
-            PlanPart currentState = states.get(currentStateIndex);
+            PlanPart currentState = states.get(currentPlanPartIndex);
             if (currentState.done()) {
-                currentStateIndex += 1;
+                currentPlanPartIndex += 1;
             }
             return false;
         } catch(IndexOutOfBoundsException e) {
@@ -36,10 +36,14 @@ public class Plan implements PlanPart {
 
     public Output.Movement movement() {
         try {
-            PlanPart currentState = states.get(currentStateIndex);
+            PlanPart currentState = states.get(currentPlanPartIndex);
             return currentState.movement();
         } catch(IndexOutOfBoundsException e) {
             return new Output.Movement();
         }
+    }
+
+    public int getPlanPartIndex() {
+        return currentPlanPartIndex;
     }
 }
