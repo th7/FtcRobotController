@@ -33,17 +33,4 @@ public class LinearPlan implements PlanPart {
             return true;
         }
     }
-
-    public Output.Movement movement() {
-        try {
-            PlanPart currentState = states.get(currentPlanPartIndex);
-            return currentState.movement();
-        } catch(IndexOutOfBoundsException e) {
-            return new Output.Movement();
-        }
-    }
-
-    public int getPlanPartIndex() {
-        return currentPlanPartIndex;
-    }
 }

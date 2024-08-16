@@ -4,5 +4,4 @@ import org.firstinspires.ftc.teamcode.Output;
 
 public interface PlanPart {
     boolean done();
-    Output.Movement movement();
 }
