@@ -4,11 +4,11 @@ import org.firstinspires.ftc.teamcode.Output;
 
 import java.util.ArrayList;
 
-public class Plan implements PlanPart {
+public class LinearPlan implements PlanPart {
     private final ArrayList<PlanPart> states = new ArrayList<>();
     private int currentPlanPartIndex = 0;
 
-    public Plan(PlanPart... all) {
+    public LinearPlan(PlanPart... all) {
         addAll(all);
     }
     public void add(PlanPart planPart) {

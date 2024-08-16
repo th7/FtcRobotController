@@ -76,8 +76,10 @@ public class AutoMoveController {
             double  headingError    = detection.ftcPose.bearing;
             double  yawError        = detection.ftcPose.yaw;
             Output.Movement movement = Output.Movement.move((float) rangeError, 0f, 1f);
-
+            return movement;
         }
+
+        return new Output.Movement();
     }
 
     public boolean inProgress() {

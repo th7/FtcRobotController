@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import org.firstinspires.ftc.teamcode.state.utils.Plan;
+import org.firstinspires.ftc.teamcode.state.utils.LinearPlan;
 import org.firstinspires.ftc.teamcode.state.utils.Step;
 import org.firstinspires.ftc.teamcode.state.utils.PlanPart;
 
@@ -24,7 +24,7 @@ public class Plans {
     }
 
     public PlanPart teamProp() {
-        return new Plan(
+        return new LinearPlan(
                 closeClaws(),
                 moveToSpikeMarks(),
                 openBottomClaw(),
@@ -49,7 +49,7 @@ public class Plans {
     }
 
     private PlanPart backstage(int turnDirection) {
-        return new Plan(
+        return new LinearPlan(
                 teamProp(),
 
                 turn(90d * turnDirection),
@@ -60,7 +60,7 @@ public class Plans {
     }
 
     private PlanPart frontStage(int turnDirection) {
-        return new Plan(
+        return new LinearPlan(
                 teamProp(),
 
                 turn(-90d * turnDirection),
