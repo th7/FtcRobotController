@@ -5,10 +5,16 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import java.util.List;
 
 public class AutoMoveController {
+
     enum Mode {
-        DRIVE_STRAIGHT, TURN, NONE
+        DRIVE_STRAIGHT, TURN, NONE, FOLLOW_APRIL_TAG;
     }
     private final DcMotor leftFront;
     private final DcMotor rightFront;
@@ -16,17 +22,21 @@ public class AutoMoveController {
     private final DcMotor rightBack;
     private final IMU imu;
     private final Telemetry telemetry;
+    private VisionPortal visionPortal;               // Used to manage the video source.
+    private AprilTagProcessor aprilTagProcessor;              // Used for managing the AprilTag detection process.
+    private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
     private int targetPosition;
     private double targetHeading;
     private Mode mode = Mode.NONE;
-    private boolean inProgress;
+    final double DESIRED_DISTANCE = 12.0;
 
-    public AutoMoveController(DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, IMU imu, Telemetry telemetry) {
+    public AutoMoveController(DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack, IMU imu, AprilTagProcessor aprilTagProcessor, Telemetry telemetry) {
         this.leftFront = leftFront;
         this.rightFront = rightFront;
         this.leftBack = leftBack;
         this.rightBack = rightBack;
         this.imu = imu;
+        this.aprilTagProcessor = aprilTagProcessor;
         this.telemetry = telemetry;
     }
 
@@ -46,11 +56,27 @@ public class AutoMoveController {
         telemetry.addData("rearRightPower", movement.rearRightPower);
     }
 
+    public void followAprilTag() {
+        this.mode = Mode.FOLLOW_APRIL_TAG;
+    }
+
     private Output.Movement calculatePower() {
         switch (mode) {
             case DRIVE_STRAIGHT: return driveStraight();
             case TURN: return turn();
+            case FOLLOW_APRIL_TAG: return followAprilTagTick();
             default: return new Output.Movement();
+        }
+    }
+
+    private Output.Movement followAprilTagTick() {
+        List<AprilTagDetection> currentDetections = aprilTagProcessor.getDetections();
+        for (AprilTagDetection detection : currentDetections) {
+            double  rangeError      = (detection.ftcPose.range - DESIRED_DISTANCE);
+            double  headingError    = detection.ftcPose.bearing;
+            double  yawError        = detection.ftcPose.yaw;
+            Output.Movement movement = Output.Movement.move((float) rangeError, 0f, 1f);
+
         }
     }
 

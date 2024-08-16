@@ -27,6 +27,7 @@ public class BaseAutoOp2023 extends BaseOp2023 {
                 leftBack,
                 rightBack,
                 imu,
+                aprilTagProcessor,
                 telemetry);
         AutoClawController clawController = new AutoClawController(
                 topClaw,

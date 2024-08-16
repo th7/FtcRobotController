@@ -146,4 +146,11 @@ public class Plans {
                 moveController::done
         );
     }
+
+    public PlanPart aprilTag() {
+        return new Step(
+                moveController::followAprilTag,
+                () -> false
+        );
+    }
 }
