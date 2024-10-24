@@ -2,11 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name="BackStageBlue2023", group="Autonomous")
-public class BackStageBlue2023 extends BaseAutoOp2023 {
+@Autonomous(name="AutoOpDrive2024", group="Autonomous")
+public class AutoOpDrive2024 extends BaseAutoOp2023 {
     @Override
     public void init() {
         super.init();
-        chosenPlan = plans.backStageBlue();
+        chosenPlan = plans.autoOpDrive();
     }
+
 }

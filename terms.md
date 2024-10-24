@@ -153,3 +153,12 @@ class Seuss {
 
 Here we add a public method which returns a double named `thingsPlus` that takes an integer argument that it refers to as `thing3`. The method adds all the things together and returns them.
 </details>
+---
+```java
+seuss1 = new Seuss(1);
+seuss2 = new Seuss(2);
+seuss1.thing1 = 3;
+```
+<details>
+
+</details>

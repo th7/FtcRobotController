@@ -18,9 +18,9 @@ public class Plans {
     }
 
     public void tick() {
-        armController.tick();
+//        armController.tick();
         moveController.tick();
-        clawController.tick();
+//        clawController.tick();
     }
 
     public PlanPart teamProp() {
@@ -31,7 +31,9 @@ public class Plans {
                 moveBackFromSpikeMarks()
         );
     }
-
+    public PlanPart autoOpDrive() {
+        return moveTiles(-3);
+    }
     public PlanPart backStageRed() {
         return backstage(1);
     }

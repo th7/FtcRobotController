@@ -13,25 +13,25 @@ public class TeleOp2023 extends BaseOp2023 {
     @Override
     public void init() {
         super.init();
-        this.armController = new ManualArmController(
-                armMotor1, armMotor2, gamepad1, telemetry);
+//        this.armController = new ManualArmController(
+//                armMotor1, armMotor2, gamepad1, telemetry);
         this.moveController =  new ManualMoveController(
                 leftFront, rightFront, leftBack, rightBack, gamepad1, telemetry);
-        this.clawController = new ManualClawController(
-                topClaw, bottomClaw, gamepad1, telemetry);
-        this.winchController = new ManualWinchController(
-                winchMotor, gamepad1, telemetry);
-        this.droneController = new ManualDroneController(
-                droneLauncher, gamepad1, telemetry);
+//        this.clawController = new ManualClawController(
+//                topClaw, bottomClaw, gamepad1, telemetry);
+//        this.winchController = new ManualWinchController(
+//                winchMotor, gamepad1, telemetry);
+//        this.droneController = new ManualDroneController(
+//                droneLauncher, gamepad1, telemetry);
     }
 
     @Override
     public void loop() {
-        armController.tick();
+//        armController.tick();
         moveController.tick();
-        clawController.tick();
-        winchController.tick();
-        droneController.tick();
+//        clawController.tick();
+//        winchController.tick();
+//        droneController.tick();
 
         telemetry.addData("gameStickLeftX", gamepad1.left_stick_x);
         telemetry.addData("gameStickLeftY", gamepad1.left_stick_y);

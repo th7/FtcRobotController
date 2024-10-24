@@ -27,6 +27,7 @@ public class AutoArmController {
         armMotor2.setPower(power);
     }
 
+
     public boolean inProgress() {
         return Util.closeEnough(this.targetPosition, armMotor1.getCurrentPosition(), 8);
     }

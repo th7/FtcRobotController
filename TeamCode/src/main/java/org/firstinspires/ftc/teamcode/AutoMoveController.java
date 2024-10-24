@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -73,9 +74,20 @@ public class AutoMoveController {
         List<AprilTagDetection> currentDetections = aprilTagProcessor.getDetections();
         for (AprilTagDetection detection : currentDetections) {
             double  rangeError      = (detection.ftcPose.range - DESIRED_DISTANCE);
-            double  headingError    = detection.ftcPose.bearing;
-            double  yawError        = detection.ftcPose.yaw;
+            double  headingError    = detection.ftcPose.bearing - 0;
+            double  yawError        = detection.ftcPose.yaw - 0;
             Output.Movement movement = Output.Movement.move((float) rangeError, 0f, 1f);
+
+//            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+//            double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+//            double  headingError    = desiredTag.ftcPose.bearing;
+//            double  yawError        = desiredTag.ftcPose.yaw;
+//
+//            // Use the speed and turn "gains" to calculate how we want the robot to move.
+//            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+//            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+//            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
             return movement;
         }
 
