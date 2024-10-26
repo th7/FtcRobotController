@@ -9,10 +9,6 @@
 // before doing so.
 
 
-plugins {
-    id 'de.mannodermaus.android-junit5' version '1.9.3.0'
-}
-
 // Custom definitions may go here
 
 // Include common definitions from above.
@@ -29,5 +25,4 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
-    annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 }
