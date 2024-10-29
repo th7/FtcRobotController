@@ -39,14 +39,14 @@ public class ManualMoveController {
     }
 
     private Output.Movement manualTurn() {
-        return Output.Movement.turn(gamepad.right_stick_x, 0f, 1f);
+        return Output.Movement.turn(-gamepad.right_stick_x, 0f, 1f);
     }
 
     private Output.Movement manualMove() {
-        return Output.Movement.move(gamepad.left_stick_y, 0f, 1f);
+        return Output.Movement.move(-gamepad.left_stick_y, 0f, 1f);
     }
 
     private Output.Movement manualStrafe() {
-        return Output.Movement.strafe(-gamepad.left_stick_x, 0f, 1f);
+        return Output.Movement.strafe(gamepad.left_stick_x, 0f, 1f);
     }
 }

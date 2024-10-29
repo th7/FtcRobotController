@@ -32,7 +32,9 @@ public abstract class BaseOp2023 extends OpMode {
     leftFront  = hardwareMap.get(DcMotor.class, "LeftFront");
     rightFront = hardwareMap.get(DcMotor.class, "RightFront");
     leftBack = hardwareMap.get(DcMotor.class, "LeftBack");
+    leftBack.setDirection(DcMotor.Direction.REVERSE);
     rightBack = hardwareMap.get(DcMotor.class, "RightBack");
+    rightBack.setDirection(DcMotor.Direction.REVERSE);
 
 //    armMotor1 = hardwareMap.get(DcMotor.class, "ArmMotor1");
 //    armMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

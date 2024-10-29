@@ -54,8 +54,8 @@ public class Output {
     }
 
     private void move(float power) {
-      this.frontLeftPower = -power;
-      this.frontRightPower = -power;
+      this.frontLeftPower = power;
+      this.frontRightPower = power;
       this.rearLeftPower = power;
       this.rearRightPower = power;
     }

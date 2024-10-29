@@ -9,7 +9,7 @@ public class Plans {
     private final AutoMoveController moveController;
     private final AutoClawController clawController;
 
-    public static final double oneTile = 1195d;
+    public static final double oneTile = 1275d;
 
     Plans(AutoArmController armController, AutoMoveController moveController, AutoClawController clawController) {
         this.armController = armController;
@@ -32,7 +32,15 @@ public class Plans {
         );
     }
     public PlanPart autoOpDrive() {
-        return moveTiles(-3);
+        return moveTiles(2.2);
+    }
+
+    public PlanPart autoOpDropOffAndDrive() {
+        return new LinearPlan(
+                moveTiles(1.2),
+                moveTiles(-4.2)
+        );
+
     }
     public PlanPart backStageRed() {
         return backstage(1);
