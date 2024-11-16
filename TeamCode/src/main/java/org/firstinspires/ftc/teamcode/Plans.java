@@ -5,71 +5,55 @@ import org.firstinspires.ftc.teamcode.state.utils.Step;
 import org.firstinspires.ftc.teamcode.state.utils.PlanPart;
 
 public class Plans {
-    private final AutoArmController armController;
-    private final AutoMoveController moveController;
-    private final AutoClawController clawController;
-
     public static final double oneTile = 1275d;
 
-    Plans(AutoArmController armController, AutoMoveController moveController, AutoClawController clawController) {
-        this.armController = armController;
-        this.moveController = moveController;
-        this.clawController = clawController;
-    }
-
-    public void tick() {
-//        armController.tick();
-        moveController.tick();
-//        clawController.tick();
-    }
-
-    public PlanPart teamProp() {
+    public static PlanPart teamProp() {
         return new LinearPlan(
-                closeClaws(),
+//                closeClaws(),
                 moveToSpikeMarks(),
-                openBottomClaw(),
+//                openBottomClaw(),
                 moveBackFromSpikeMarks()
         );
     }
-    public PlanPart autoOpDrive() {
+    public static PlanPart autoOpDrive() {
         return moveTiles(2.2);
     }
 
-    public PlanPart autoOpDropOffAndDrive() {
+    public static PlanPart autoOpDropOffAndDrive() {
         return new LinearPlan(
                 moveTiles(1.2),
                 moveTiles(-4.2)
         );
 
     }
-    public PlanPart backStageRed() {
+    public static PlanPart backStageRed() {
         return backstage(1);
     }
 
-    public PlanPart backStageBlue() {
+    public static PlanPart backStageBlue() {
         return backstage(-1);
     }
 
-    public PlanPart frontStageRed() {
+    public static PlanPart frontStageRed() {
         return frontStage(1);
     }
 
-    public PlanPart frontStageBlue() {
+    public static PlanPart frontStageBlue() {
         return frontStage(-1);
     }
 
-    private PlanPart backstage(int turnDirection) {
+    private static PlanPart backstage(int turnDirection) {
         return new LinearPlan(
                 teamProp(),
 
                 turn(90d * turnDirection),
                 moveBackStageShort(),
-                openTopClaw(),
+//                openTopClaw(),
                 nudgeBack()
         );
     }
 
-    private PlanPart frontStage(int turnDirection) {
+    private static PlanPart frontStage(int turnDirection) {
         return new LinearPlan(
                 teamProp(),
 
@@ -81,85 +65,85 @@ public class Plans {
                 moveToMiddle(),
                 turn(45d * turnDirection),
                 moveBackStageLong(),
-                openTopClaw(),
+//                openTopClaw(),
                 nudgeBack()
         );
     }
 
-    private PlanPart closeClaws() {
-        return new Step(
-                clawController::closeClaws,
-                clawController::done
-        );
-    }
+//    private static PlanPart closeClaws() {
+//        return new Step(
+//                clawController::closeClaws,
+//                clawController::done
+//        );
+//    }
 
-    private PlanPart moveToSpikeMarks() {
+    private static PlanPart moveToSpikeMarks() {
         return moveTiles(1.3);
     }
 
-    private PlanPart openBottomClaw() {
-        return new Step(
-                clawController::openBottomClaw,
-                clawController::done
-        );
-    }
+//    private static PlanPart openBottomClaw() {
+//        return new Step(
+//                clawController::openBottomClaw,
+//                clawController::done
+//        );
+//    }
 
-    private PlanPart moveBackFromSpikeMarks() {
+    private static PlanPart moveBackFromSpikeMarks() {
         return moveTiles(-0.9);
     }
 
-    private PlanPart moveBackStageShort() {
+    private static PlanPart moveBackStageShort() {
         return moveTiles(1.8);
     }
 
-    private PlanPart moveToWing() {
+    private static PlanPart moveToWing() {
         return moveTiles(0.8);
     }
 
-    private PlanPart wingToMiddle() {
+    private static PlanPart wingToMiddle() {
         return moveTiles(1.7);
     }
 
-    private PlanPart moveToMiddle() {
+    private static PlanPart moveToMiddle() {
         return moveTiles(0.8);
     }
 
-    private PlanPart moveBackStageLong() {
+    private static PlanPart moveBackStageLong() {
         return moveTiles(4);
     }
 
-    private PlanPart openTopClaw() {
-        return new Step(
-                clawController::openTopClaw,
-                clawController::done
-        );
-    }
+//    private static PlanPart openTopClaw() {
+//        return new Step(
+//                clawController::openTopClaw,
+//                clawController::done
+//        );
+//    }
 
-    private PlanPart nudgeBack() {
+    private static PlanPart nudgeBack() {
         return moveTiles(-0.2);
     }
 
-    private PlanPart move(double distance) {
+    private static PlanPart move(double distance) {
         return new Step(
-                () -> moveController.moveStraight((int) distance),
-                moveController::done
+                () -> Move.moveStraight((int) distance),
+                Move::done
         );
     }
 
-    private PlanPart moveTiles(double tiles) {
+    private static PlanPart moveTiles(double tiles) {
         return move(oneTile * tiles);
     }
 
-    private PlanPart turn(double angle) {
+    private static PlanPart turn(double angle) {
         return new Step(
-                () -> moveController.turn(angle),
-                moveController::done
+                () -> Move.turn(angle),
+                Move::done
         );
     }
 
-    public PlanPart aprilTag() {
+    public static PlanPart aprilTag() {
         return new Step(
-                moveController::followAprilTag,
+                Move::followAprilTag,
                 () -> false
         );
     }

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.state.utils;
 
-import org.firstinspires.ftc.teamcode.Output;
-
 import java.util.ArrayList;
 
 public class LinearPlan implements PlanPart {

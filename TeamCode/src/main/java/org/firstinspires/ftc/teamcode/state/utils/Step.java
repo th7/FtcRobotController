@@ -1,18 +1,18 @@
 package org.firstinspires.ftc.teamcode.state.utils;
 
-import org.firstinspires.ftc.teamcode.Output;
+import org.firstinspires.ftc.teamcode.MoveData;
 
 public class Step implements PlanPart {
     private boolean started = false;
     private final VoidCallable start;
     private final Callable<Boolean> done;
-    private final Callable<Output.Movement> movement;
+    private final Callable<MoveData> movement;
 
     public Step(VoidCallable start, Callable<Boolean> done) {
-        this(start, Output.Movement::new, done);
+        this(start, MoveData::new, done);
     }
 
-    public Step(VoidCallable start, Callable<Output.Movement> movement, Callable<Boolean> done) {
+    public Step(VoidCallable start, Callable<MoveData> movement, Callable<Boolean> done) {
         this.start = start;
         this.movement = movement;
         this.done = done;
@@ -24,7 +24,7 @@ public class Step implements PlanPart {
         return this.done.call();
     }
 
-    public Output.Movement movement() {
+    public MoveData movement() {
         return movement.call();
     }
 }

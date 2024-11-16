@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.state.utils;
 
-import org.firstinspires.ftc.teamcode.Output;
-
-import java.util.Arrays;
-import java.util.stream.Stream;
+import org.firstinspires.ftc.teamcode.MoveData;
 
 public class SameTimeStep implements PlanPart {
     private final PlanPart[] parts;
@@ -20,8 +17,8 @@ public class SameTimeStep implements PlanPart {
         return allDone;
     }
 
-    public Output.Movement movement() {
+    public MoveData movement() {
 //        return movement.call();
-        return new Output.Movement();
+        return new MoveData();
     }
 }
