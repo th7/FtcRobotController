@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -17,8 +18,7 @@ public abstract class BaseOp2023 extends OpMode {
   DcMotor leftBack = null;
   DcMotor rightBack = null;
 
-  DcMotor armMotor1 = null;
-  DcMotor armMotor2 = null;
+  DcMotor liftMotor = null;
   DcMotor winchMotor = null;
   IMU imu = null;
   Servo topClaw = null;
@@ -36,16 +36,18 @@ public abstract class BaseOp2023 extends OpMode {
     rightBack = hardwareMap.get(DcMotor.class, "RightBack");
     rightBack.setDirection(DcMotor.Direction.REVERSE);
 
-//    armMotor1 = hardwareMap.get(DcMotor.class, "ArmMotor1");
-//    armMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//    armMotor1.setDirection(DcMotor.Direction.REVERSE);
-//    armMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    liftMotor = hardwareMap.get(DcMotor.class, "LiftMotor");
+    liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//    liftMotor.setDirection(DcMotor.Direction.REVERSE);
+    liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //    armMotor2 = hardwareMap.get(DcMotor.class, "ArmMotor2");
 //    armMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //    armMotor2.setDirection(DcMotor.Direction.REVERSE);
 //    armMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-//    winchMotor = hardwareMap.get(DcMotor.class, "WinchMotor");
+    winchMotor = hardwareMap.get(DcMotor.class, "WinchMotor");
+    winchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    winchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //
     imu = hardwareMap.get(IMU.class, "IMU");
     imu.resetYaw();

@@ -20,7 +20,7 @@ public class BaseAutoOp2023 extends BaseOp2023 {
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        AutoArmController armController = new AutoArmController(armMotor1, armMotor2, telemetry);
+        AutoArmController armController = new AutoArmController(liftMotor, telemetry);
         AutoMoveController moveController = new AutoMoveController(
                 leftFront,
                 rightFront,

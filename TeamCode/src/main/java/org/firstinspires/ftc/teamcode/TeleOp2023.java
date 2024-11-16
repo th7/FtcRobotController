@@ -13,8 +13,8 @@ public class TeleOp2023 extends BaseOp2023 {
     @Override
     public void init() {
         super.init();
-//        this.armController = new ManualArmController(
-//                armMotor1, armMotor2, gamepad1, telemetry);
+        this.armController = new ManualArmController(
+                liftMotor, winchMotor, gamepad1, telemetry);
         this.moveController =  new ManualMoveController(
                 leftFront, rightFront, leftBack, rightBack, gamepad1, telemetry);
 //        this.clawController = new ManualClawController(
@@ -27,7 +27,7 @@ public class TeleOp2023 extends BaseOp2023 {
 
     @Override
     public void loop() {
-//        armController.tick();
+        armController.tick();
         moveController.tick();
 //        clawController.tick();
 //        winchController.tick();
