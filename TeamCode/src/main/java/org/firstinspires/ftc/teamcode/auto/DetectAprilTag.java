@@ -5,11 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.BaseAutoOp;
 import org.firstinspires.ftc.teamcode.Plans;
 
-@Autonomous(name="AutoOpDrive2024", group="Autonomous")
-public class AutoOpDrive2024 extends BaseAutoOp {
+@Autonomous(name="DetectAprilTag", group="Autonomous")
+public class DetectAprilTag extends BaseAutoOp {
     @Override
     public void init() {
         super.init();
-        chosenPlan = Plans.autoOpDrive();
+        chosenPlan = Plans.detectAprilTag();
     }
 }

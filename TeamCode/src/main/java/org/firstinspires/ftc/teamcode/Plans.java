@@ -19,6 +19,15 @@ public class Plans {
         return moveTiles(2.2);
     }
 
+    public static PlanPart detectAprilTag() {
+        return new LinearPlan(
+                new Step(
+                        Move::detectAprilTag,
+                        () -> false
+                )
+        );
+    }
+
     public static PlanPart autoOpDropOffAndDrive() {
         return new LinearPlan(
                 moveTiles(1.2),

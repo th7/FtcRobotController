@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Move {
     enum Mode {
-        DRIVE_STRAIGHT, TURN, NONE, FOLLOW_APRIL_TAG;
+        DRIVE_STRAIGHT, TURN, NONE, FOLLOW_APRIL_TAG, DETECT_APRIL_TAG;
     }
     private static DcMotor leftFront;
     private static DcMotor rightFront;
@@ -71,11 +71,16 @@ public class Move {
         data.mode = Mode.FOLLOW_APRIL_TAG;
     }
 
+    public static void detectAprilTag() {
+        data.mode = Mode.DETECT_APRIL_TAG;
+    }
+
     private static MoveData calculateMoveData() {
         switch (data.mode) {
             case DRIVE_STRAIGHT: return driveStraight();
             case TURN: return turn();
             case FOLLOW_APRIL_TAG: return followAprilTagTick();
+            case DETECT_APRIL_TAG: return detectAprilTagTick();
             default: return new MoveData();
         }
     }
@@ -99,6 +104,16 @@ public class Move {
 //            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
             return movement;
+        }
+
+        return new MoveData();
+    }
+    private static MoveData detectAprilTagTick() {
+        List<AprilTagDetection> currentDetections = aprilTagProcessor.getDetections();
+        for (AprilTagDetection detection : currentDetections) {
+            telemetry.addData("AprilTag" + detection.id + "Range", detection.ftcPose.range);
+            telemetry.addData("AprilTag" + detection.id + "Yaw", detection.ftcPose.yaw);
+            telemetry.addData("AprilTag" + detection.id + "Bearing", detection.ftcPose.bearing);
         }
 
         return new MoveData();

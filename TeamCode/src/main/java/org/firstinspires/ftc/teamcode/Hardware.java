@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
@@ -64,13 +65,14 @@ public class Hardware {
 //    droneLauncher.setDirection(Servo.Direction.REVERSE);
 //    droneLauncher.setPosition(ManualDroneController.initialPosition);
 //
-//    aprilTagProcessor = new AprilTagProcessor.Builder().build();
-//
-//    visionPortal = new VisionPortal.Builder()
-//            .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-//            .addProcessor(aprilTagProcessor)
-//            .build();
-        telemetry.addData("Hardware.init()", true);
+    aprilTagProcessor = new AprilTagProcessor.Builder().build();
+
+    visionPortal = new VisionPortal.Builder()
+            .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+            .addProcessor(aprilTagProcessor)
+            .build();
+
+    telemetry.addData("Hardware.init()", true);
     }
 
     public static void initAuto() {
