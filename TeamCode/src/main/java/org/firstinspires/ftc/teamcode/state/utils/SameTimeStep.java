@@ -16,9 +16,4 @@ public class SameTimeStep implements PlanPart {
         }
         return allDone;
     }
-
-    public MoveData movement() {
-//        return movement.call();
-        return new MoveData();
-    }
 }
