@@ -111,6 +111,10 @@ public class Move {
     private static MoveData detectAprilTagTick() {
         List<AprilTagDetection> currentDetections = aprilTagProcessor.getDetections();
         for (AprilTagDetection detection : currentDetections) {
+            telemetry.addData("AprilTag" + detection.id, true);
+
+            if (detection.ftcPose == null) { continue; }
+
             telemetry.addData("AprilTag" + detection.id + "Range", detection.ftcPose.range);
             telemetry.addData("AprilTag" + detection.id + "Yaw", detection.ftcPose.yaw);
             telemetry.addData("AprilTag" + detection.id + "Bearing", detection.ftcPose.bearing);

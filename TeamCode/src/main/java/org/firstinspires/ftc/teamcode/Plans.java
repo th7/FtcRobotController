@@ -16,7 +16,10 @@ public class Plans {
         );
     }
     public static PlanPart autoOpDrive() {
-        return moveTiles(2.2);
+        return new LinearPlan(
+                armToAboveFloor(),
+                moveTiles(2.2)
+        );
     }
 
     public static PlanPart detectAprilTag() {
@@ -147,6 +150,13 @@ public class Plans {
         return new Step(
                 () -> Move.turn(angle),
                 Move::done
+        );
+    }
+
+    private static PlanPart armToAboveFloor() {
+        return new Step(
+                () -> Arm.armToAboveFloor(),
+                Arm::done
         );
     }
 

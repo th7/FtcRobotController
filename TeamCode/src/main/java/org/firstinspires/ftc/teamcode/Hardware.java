@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -21,15 +20,16 @@ public class Hardware {
     public static DcMotor rightFront = null;
     public static DcMotor leftBack = null;
     public static DcMotor rightBack = null;
-
-    public static DcMotor liftMotor = null;
+    public static DcMotor armMotor = null;
+    public static DcMotor wristMotor = null;
     public static DcMotor winchMotor = null;
     public static IMU imu = null;
-    public static Servo topClaw = null;
-    public static Servo bottomClaw = null;
+    public static Servo rightClaw = null;
+    public static Servo leftClaw = null;
     public static Servo droneLauncher = null;
     public static VisionPortal visionPortal = null;
     public static AprilTagProcessor aprilTagProcessor = null;
+
 
 
 
@@ -41,24 +41,27 @@ public class Hardware {
         rightBack = hardwareMap.get(DcMotor.class, "RightBack");
         rightBack.setDirection(DcMotor.Direction.REVERSE);
 
-        liftMotor = hardwareMap.get(DcMotor.class, "LiftMotor");
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor = hardwareMap.get(DcMotor.class, "ArmMotor");
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //    liftMotor.setDirection(DcMotor.Direction.REVERSE);
-        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        wristMotor = hardwareMap.get(DcMotor.class, "WristMotor");
+        wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        wristMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //    armMotor2 = hardwareMap.get(DcMotor.class, "ArmMotor2");
 //    armMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //    armMotor2.setDirection(DcMotor.Direction.REVERSE);
 //    armMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        winchMotor = hardwareMap.get(DcMotor.class, "WinchMotor");
-        winchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        winchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //
+//        winchMotor = hardwareMap.get(DcMotor.class, "WinchMotor");
+//        winchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        winchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         imu = hardwareMap.get(IMU.class, "IMU");
         imu.resetYaw();
-//
-//    topClaw = hardwareMap.get(Servo.class, "TopClaw");
-//    bottomClaw = hardwareMap.get(Servo.class, "BottomClaw");
+
+    rightClaw = hardwareMap.get(Servo.class, "RightClaw");
+    leftClaw = hardwareMap.get(Servo.class, "LeftClaw");
 //
 //    droneLauncher = hardwareMap.get(Servo.class, "DroneLaunch");
 //
