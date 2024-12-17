@@ -9,15 +9,6 @@ public class LinearPlan implements PlanPart {
     public LinearPlan(PlanPart... all) {
         addAll(all);
     }
-    public void add(PlanPart planPart) {
-        planParts.add(planPart);
-    }
-
-    public void addAll(PlanPart... all) {
-        for (PlanPart planPart : all) {
-            add(planPart);
-        }
-    }
 
     @Override
     public boolean done() {
@@ -29,6 +20,16 @@ public class LinearPlan implements PlanPart {
             return false;
         } catch(IndexOutOfBoundsException e) {
             return true;
+        }
+    }
+
+    private void add(PlanPart planPart) {
+        planParts.add(planPart);
+    }
+
+    private void addAll(PlanPart... all) {
+        for (PlanPart planPart : all) {
+            add(planPart);
         }
     }
 }
