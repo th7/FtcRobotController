@@ -10,16 +10,27 @@ public class LinearPlan implements PlanPart {
         addAll(all);
     }
 
+    public String currentStep() {
+        return Integer.toString(currentPlanPartIndex) + ". " + currentPlanPart().currentStep();
+    }
     @Override
     public boolean done() {
         try {
-            PlanPart currentState = planParts.get(currentPlanPartIndex);
-            if (currentState.done()) {
+            PlanPart currentPlanPart = currentPlanPart();
+            if (currentPlanPart.done()) {
                 currentPlanPartIndex += 1;
             }
             return false;
         } catch(IndexOutOfBoundsException e) {
             return true;
+        }
+    }
+
+    private PlanPart currentPlanPart() {
+        try {
+            return planParts.get(currentPlanPartIndex);
+        } catch(IndexOutOfBoundsException e) {
+            return null;
         }
     }
 

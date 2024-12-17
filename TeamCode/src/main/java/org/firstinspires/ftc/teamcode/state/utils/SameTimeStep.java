@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.state.utils;
 
-import org.firstinspires.ftc.teamcode.MoveData;
+import java.util.Arrays;
+import java.util.List;
 
 public class SameTimeStep implements PlanPart {
     private final PlanPart[] parts;
@@ -15,5 +16,11 @@ public class SameTimeStep implements PlanPart {
             if (!part.done()) { allDone = false; }
         }
         return allDone;
+    }
+
+    @Override
+    public String currentStep() {
+        List<String> currentSteps = (List<String>) Arrays.stream(parts).map(part -> part.currentStep());
+        return String.join("/", currentSteps);
     }
 }
