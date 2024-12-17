@@ -15,6 +15,27 @@ public class Plans {
                 moveBackFromSpikeMarks()
         );
     }
+
+    public static PlanPart autoOpLowBasket() {
+        return new LinearPlan(
+                armToLowBasket(),
+                moveTiles(-0.3),
+                openClaws()
+                );
+    }
+
+    public static PlanPart autoOpLowBasketAndPark() {
+        return new LinearPlan(
+                armToLowBasket(),
+                moveTiles(-0.3),
+                openClaws(),
+                closeClaws(),
+                armToAboveFloor(),
+                moveTiles(3.3)
+        );
+    }
+
+
     public static PlanPart autoOpDrive() {
         return new LinearPlan(
                 armToAboveFloor(),
@@ -33,6 +54,7 @@ public class Plans {
 
     public static PlanPart autoOpDropOffAndDrive() {
         return new LinearPlan(
+                armToAboveFloor(),
                 moveTiles(1.2),
                 moveTiles(-4.2)
         );
@@ -156,6 +178,27 @@ public class Plans {
     private static PlanPart armToAboveFloor() {
         return new Step(
                 () -> Arm.armToAboveFloor(),
+                Arm::done
+        );
+    }
+
+    private static PlanPart armToLowBasket() {
+        return new Step(
+                () -> Arm.armToLowBasket(),
+                Arm::done
+        );
+    }
+
+    private static PlanPart openClaws() {
+        return new Step(
+                () -> Arm.openClaw(),
+                Arm::done
+        );
+    }
+
+    private static PlanPart closeClaws() {
+        return new Step(
+                () -> Arm.closeClaw(),
                 Arm::done
         );
     }

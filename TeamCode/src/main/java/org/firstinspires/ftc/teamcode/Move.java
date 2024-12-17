@@ -50,7 +50,7 @@ public class Move {
 
     public static void calculateAuto() {
         data.moveData = calculateMoveData();
-        telemetry.addData("mode", data.mode);
+        telemetry.addData("Move.mode", data.mode);
         telemetry.addData("targetPosition", data.targetPosition);
         telemetry.addData("wheelPosition", position());
         telemetry.addData("targetHeading", data.targetHeading);

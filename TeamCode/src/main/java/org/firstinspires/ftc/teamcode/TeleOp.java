@@ -13,7 +13,7 @@ public class TeleOp extends BaseOp {
     public void loop() {
         if (gamepad1.triangle) { Arm.armToFloor(); } else if (gamepad1.x) { Arm.armToAboveFloor(); }
         if (gamepad1.circle) { Arm.armToLowBasket(); } else if (gamepad1.square) { Arm.armAway(); }
-        if (gamepad1.dpad_left) { Arm.wristOut(); } else if (gamepad1.dpad_right) { Arm.wristIn(); } else { Arm.wristStop(); }
+//        if (gamepad1.dpad_left) { Arm.wristOut(); } else if (gamepad1.dpad_right) { Arm.wristIn(); } else { Arm.wristStop(); }
         if (gamepad1.right_trigger > 0) { Arm.openClaw(); } else if (gamepad1.left_trigger > 0) { Arm.closeClaw(); }
         if (gamepad1.dpad_down) { Arm.manualDown(); } else if (gamepad1.dpad_up) { Arm.manualUp(); }
 

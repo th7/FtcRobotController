@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -12,16 +13,19 @@ public class Arm {
     private static Servo leftClaw;
     private static Servo rightClaw;
     private static Telemetry telemetry;
+    private static ElapsedTime runtime;
     private static final float inverseArmGain = 100;
     private static final int minLiftPosition = 0;
     private static final int maxLiftPosition = 2700;
     private static final int manualArmRate = 50;
+    private static final double clawWaitSeconds = 0.6d;
     private static Arm data;
-    private int targetLiftPosition = 0;
+    private int targetArmPosition = 0;
     private float winchPower = 0f;
     private float wristPower = 0f;
     private float leftClawPosition = 0.5f;
     private float rightClawPosition = 0.5f;
+    private double clawMoveStartedSeconds = -1d;
 
 
     public static void init() {
@@ -30,34 +34,47 @@ public class Arm {
         leftClaw = Hardware.leftClaw;
 //        winchMotor = Hardware.winchMotor;
         wristMotor = Hardware.wristMotor;
+        runtime = Hardware.runtime;
         telemetry = Hardware.telemetry;
         data = new Arm();
         telemetry.addData("Arm.init()", true);
     }
 
-    public static boolean done() {
-        return Util.closeEnough(armMotor.getCurrentPosition(), data.targetLiftPosition, 5);
+    private static boolean clawDone() {
+        return runtime.seconds() < data.clawMoveStartedSeconds + clawWaitSeconds;
+    }
+
+    private static boolean armMoveDone() {
+        return Util.closeEnough(armMotor.getCurrentPosition(), data.targetArmPosition, 5);
+    }
+
+    public static boolean done(){
+        return clawDone() && armMoveDone();
     }
 
     public static void manualUp() {
-        data.targetLiftPosition = armMotor.getCurrentPosition() + manualArmRate;
+        data.targetArmPosition = armMotor.getCurrentPosition() + manualArmRate;
     }
 
     public static void manualDown() {
-        data.targetLiftPosition = armMotor.getCurrentPosition() - manualArmRate;
+        data.targetArmPosition = armMotor.getCurrentPosition() - manualArmRate;
     }
 
-    public static void armToFloor() { data.targetLiftPosition = maxLiftPosition; }
+    public static void armToFloor() { data.targetArmPosition = maxLiftPosition; }
 
     public static void armAway() {
-        data.targetLiftPosition = minLiftPosition;
+        data.targetArmPosition = minLiftPosition;
     }
 
-    public static void armToLowBasket() { data.targetLiftPosition = 1500; }
+    public static void armToLowBasket() { data.targetArmPosition = 1500; }
 
-    public static void armToHighBasket() { data.targetLiftPosition = 350; }
+    public static void armToHighBasket() { data.targetArmPosition = 350; }
 
-    public static void armToAboveFloor () { data.targetLiftPosition = 100; }
+    public static void armToAboveFloor () {
+        data.targetArmPosition = 100;
+        telemetry.addData("armToAboveFloorIsCalled", true);
+
+    }
 
     public static void winchUp() {
         data.winchPower = 0.25f;
@@ -82,11 +99,13 @@ public class Arm {
     public static void wristStop() { data.wristPower = 0; }
 
     public static void openClaw() {
+        data.clawMoveStartedSeconds = runtime.seconds();
         data.leftClawPosition = 0.75f;
         data.rightClawPosition = 0.25f;
     }
 
     public static void closeClaw() {
+        data.clawMoveStartedSeconds = runtime.seconds();
         data.leftClawPosition = 0.5f;
         data.rightClawPosition = 0.5f;
     }
@@ -98,7 +117,7 @@ public class Arm {
         wristMotor.setPower(data.wristPower);
         leftClaw.setPosition(data.leftClawPosition);
         rightClaw.setPosition(data.rightClawPosition);
-        telemetry.addData("targetArmPosition", data.targetLiftPosition);
+        telemetry.addData("targetArmPosition", data.targetArmPosition);
         telemetry.addData("currentArmPosition", armMotor.getCurrentPosition());
         telemetry.addData("armPower", liftPower);
         telemetry.addData("winchPower", data.winchPower);
@@ -112,7 +131,7 @@ public class Arm {
         return clipNumber;
     }
     private static float liftPower() {
-        float error = data.targetLiftPosition - armMotor.getCurrentPosition();
+        float error = data.targetArmPosition - armMotor.getCurrentPosition();
         float roughPower = 1 / inverseArmGain * error;
         return clip(roughPower);
     }
