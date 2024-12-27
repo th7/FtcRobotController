@@ -159,6 +159,7 @@ public class Plans {
 
     private static PlanPart move(double distance) {
         return new Step(
+                "move " + String.valueOf(distance),
                 () -> Move.moveStraight((int) distance),
                 Move::done
         );
@@ -170,6 +171,7 @@ public class Plans {
 
     private static PlanPart turn(double angle) {
         return new Step(
+                "turn " + String.valueOf(angle),
                 () -> Move.turn(angle),
                 Move::done
         );
@@ -177,6 +179,7 @@ public class Plans {
 
     private static PlanPart armToAboveFloor() {
         return new Step(
+                "armToAboveFloor",
                 () -> Arm.armToAboveFloor(),
                 Arm::done
         );
@@ -184,6 +187,7 @@ public class Plans {
 
     private static PlanPart armToLowBasket() {
         return new Step(
+                "armToLowBasket",
                 () -> Arm.armToLowBasket(),
                 Arm::done
         );
@@ -191,6 +195,7 @@ public class Plans {
 
     private static PlanPart openClaws() {
         return new Step(
+                "openClaws",
                 () -> Arm.openClaw(),
                 Arm::done
         );
@@ -198,6 +203,7 @@ public class Plans {
 
     private static PlanPart closeClaws() {
         return new Step(
+                "closeClaws",
                 () -> Arm.closeClaw(),
                 Arm::done
         );

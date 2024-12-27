@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -12,6 +13,7 @@ public class Arm {
     private static DcMotor wristMotor;
     private static Servo leftClaw;
     private static Servo rightClaw;
+    private static TouchSensor armLimitSwitch;
     private static Telemetry telemetry;
     private static ElapsedTime runtime;
     private static final float inverseArmGain = 100;
@@ -34,6 +36,7 @@ public class Arm {
         leftClaw = Hardware.leftClaw;
 //        winchMotor = Hardware.winchMotor;
         wristMotor = Hardware.wristMotor;
+        armLimitSwitch = Hardware.armLimitSwitch;
         runtime = Hardware.runtime;
         telemetry = Hardware.telemetry;
         data = new Arm();
@@ -41,7 +44,7 @@ public class Arm {
     }
 
     private static boolean clawDone() {
-        return runtime.seconds() < data.clawMoveStartedSeconds + clawWaitSeconds;
+        return runtime.seconds() > data.clawMoveStartedSeconds + clawWaitSeconds;
     }
 
     private static boolean armMoveDone() {
@@ -111,18 +114,24 @@ public class Arm {
     }
 
     public static void tick() {
-        float liftPower = liftPower();
-        armMotor.setPower(liftPower);
+        float armPower = armPower();
+        armMotor.setPower(armPower);
 //        winchMotor.setPower(data.winchPower);
         wristMotor.setPower(data.wristPower);
         leftClaw.setPosition(data.leftClawPosition);
         rightClaw.setPosition(data.rightClawPosition);
+        if (armLimitSwitch.isPressed()) {
+            armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            if (data.targetArmPosition < 0) { data.targetArmPosition = 0; }
+        }
         telemetry.addData("targetArmPosition", data.targetArmPosition);
         telemetry.addData("currentArmPosition", armMotor.getCurrentPosition());
-        telemetry.addData("armPower", liftPower);
+        telemetry.addData("armPower", armPower);
         telemetry.addData("winchPower", data.winchPower);
         telemetry.addData("leftClawPosition", data.leftClawPosition);
         telemetry.addData("rightClawPosition", data.rightClawPosition);
+        telemetry.addData("armLimitSwitchPressed", armLimitSwitch.isPressed());
     }
 
     private static float clip(float clipNumber) {
@@ -130,9 +139,12 @@ public class Arm {
         if (clipNumber < -1) {return -1;}
         return clipNumber;
     }
-    private static float liftPower() {
+    private static float armPower() {
         float error = data.targetArmPosition - armMotor.getCurrentPosition();
         float roughPower = 1 / inverseArmGain * error;
+        if (roughPower < 0 && armLimitSwitch.isPressed()) {
+            return 0;
+        }
         return clip(roughPower);
     }
 }

@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -27,8 +28,10 @@ public class Hardware {
     public static Servo rightClaw = null;
     public static Servo leftClaw = null;
     public static Servo droneLauncher = null;
+    public static TouchSensor armLimitSwitch = null;
     public static VisionPortal visionPortal = null;
     public static AprilTagProcessor aprilTagProcessor = null;
+
 
 
 
@@ -68,6 +71,8 @@ public class Hardware {
 //    droneLauncher.setDirection(Servo.Direction.REVERSE);
 //    droneLauncher.setPosition(ManualDroneController.initialPosition);
 //
+    armLimitSwitch = hardwareMap.get(TouchSensor.class, "ArmLimitSwitch");
+
     aprilTagProcessor = new AprilTagProcessor.Builder().build();
 
     visionPortal = new VisionPortal.Builder()

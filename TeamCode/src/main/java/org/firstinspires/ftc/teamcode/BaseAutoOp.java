@@ -16,6 +16,7 @@ public abstract class BaseAutoOp extends BaseOp {
         Move.calculateAuto();
         Move.tick();
         Arm.tick();
+        telemetry.addData("currentStep", chosenPlan.currentStep());
         chosenPlan.done();
         telemetry.update();
     }
