@@ -11,17 +11,22 @@ public class LinearPlan implements PlanPart {
     }
 
     public String currentStep() {
-        return Integer.toString(currentPlanPartIndex) + ". " + currentPlanPart().currentStep();
+        PlanPart currentPlanPart = currentPlanPart();
+        if (currentPlanPart == null) {
+            return "null";
+        } else {
+            return Integer.toString(currentPlanPartIndex) + ". " + currentPlanPart.currentStep();
+        }
     }
     @Override
     public boolean done() {
-        try {
-            PlanPart currentPlanPart = currentPlanPart();
+        PlanPart currentPlanPart = currentPlanPart();
+        if (currentPlanPart != null) {
             if (currentPlanPart.done()) {
                 currentPlanPartIndex += 1;
             }
             return false;
-        } catch(IndexOutOfBoundsException e) {
+        } else {
             return true;
         }
     }
