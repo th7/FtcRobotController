@@ -24,6 +24,41 @@ public class Plans {
                 );
     }
 
+    public static PlanPart autoOpDoubleLowBasket() {
+        return new LinearPlan(
+                armToLowBasketNoWait(),
+                moveTiles(-0.3),
+                waitForArm(),
+                openClaws(),
+//                armToAboveFloorNoWait(),
+                turn(-90),
+//                waitForArm(),
+                armToFloor(),
+                closeClaws(),
+                armToLowBasket(),
+                turn(90),
+                openClaws()
+        );
+    }
+
+    public static PlanPart autoOpDoubleLowBasketAndPark() {
+        return new LinearPlan(
+                armToLowBasket(),
+                moveTiles(-0.3),
+                openClaws(),
+                armToAboveFloor(),
+                turn(90),
+                armToFloor(),
+                closeClaws(),
+                turn(-90),
+                armToLowBasket(),
+                openClaws(),
+                closeClaws(),
+                armToAboveFloor(),
+                moveTiles(3.3)
+        );
+    }
+
     public static PlanPart autoOpLowBasketAndPark() {
         return new LinearPlan(
                 armToLowBasket(),
@@ -47,6 +82,15 @@ public class Plans {
         return new LinearPlan(
                 new Step(
                         Move::detectAprilTag,
+                        () -> false
+                )
+        );
+    }
+
+    public static PlanPart orbitAprilTag() {
+        return new LinearPlan(
+                new Step(
+                        Move::orbitAprilTag,
                         () -> false
                 )
         );
@@ -173,6 +217,7 @@ public class Plans {
         return new Step(
                 "turn " + String.valueOf(angle),
                 () -> Move.turn(angle),
+                //does need lambda because it has an argument
                 Move::done
         );
     }
@@ -185,10 +230,45 @@ public class Plans {
         );
     }
 
+    private static PlanPart armToAboveFloorNoWait() {
+        return new Step(
+                "armToAboveFloorNoWait",
+                () -> Arm.armToAboveFloor(),
+                () -> true
+        );
+    }
+
+    private static PlanPart armToFloor() {
+        return new Step(
+                "armToFloor",
+                () -> Arm.armToFloor(),
+                //does not need lambda :)
+                Arm::done
+                //Arm.armToFloor lambda thingy could look like the done
+        );
+    }
+
     private static PlanPart armToLowBasket() {
         return new Step(
                 "armToLowBasket",
                 () -> Arm.armToLowBasket(),
+                Arm::done
+        );
+    }
+
+    private static PlanPart armToLowBasketNoWait() {
+        return new Step(
+                "armToLowBasket",
+                () -> Arm.armToLowBasket(),
+                () -> true //replaces usual done method
+                //has to be a lambda because it needs to be called
+        );
+    }
+
+    private static PlanPart waitForArm() {
+        return new Step(
+          "waitForArm",
+                () -> {},
                 Arm::done
         );
     }

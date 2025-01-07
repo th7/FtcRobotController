@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Move {
     enum Mode {
-        DRIVE_STRAIGHT, TURN, NONE, FOLLOW_APRIL_TAG, DETECT_APRIL_TAG;
+        DRIVE_STRAIGHT, TURN, NONE, FOLLOW_APRIL_TAG, DETECT_APRIL_TAG, ORBIT_APRIL_TAG;
     }
     private static DcMotor leftFront;
     private static DcMotor rightFront;
@@ -21,7 +21,7 @@ public class Move {
     private static AprilTagProcessor aprilTagProcessor;
     private static Telemetry telemetry;
     private static IMU imu;
-    private static final double DESIRED_TAG_DISTANCE = 12.0;
+    private static final double DESIRED_TAG_DISTANCE = 24.0;
     private static Move data;
     private MoveData moveData = new MoveData();
     private int targetPosition;
@@ -75,12 +75,15 @@ public class Move {
         data.mode = Mode.DETECT_APRIL_TAG;
     }
 
+    public static void orbitAprilTag() { data.mode = Mode.ORBIT_APRIL_TAG; }
+
     private static MoveData calculateMoveData() {
         switch (data.mode) {
             case DRIVE_STRAIGHT: return driveStraight();
             case TURN: return turn();
             case FOLLOW_APRIL_TAG: return followAprilTagTick();
             case DETECT_APRIL_TAG: return detectAprilTagTick();
+            case ORBIT_APRIL_TAG: return orbitAprilTagTick();
             default: return new MoveData();
         }
     }
@@ -116,10 +119,64 @@ public class Move {
             if (detection.ftcPose == null) { continue; }
 
             telemetry.addData("AprilTag" + detection.id + "Range", detection.ftcPose.range);
-            telemetry.addData("AprilTag" + detection.id + "Yaw", detection.ftcPose.yaw);
+            telemetry.addData("AprilTag" + detection.id + "AprilTagYaw", detection.ftcPose.yaw);
             telemetry.addData("AprilTag" + detection.id + "Bearing", detection.ftcPose.bearing);
         }
 
+        return new MoveData();
+    }
+
+    public static MoveData orbitAprilTagTick() {
+        List<AprilTagDetection> currentDetections = aprilTagProcessor.getDetections();
+        for (AprilTagDetection detection : currentDetections) {
+            telemetry.addData("AprilTag", detection.id);
+            if(detection.ftcPose == null) {
+                telemetry.addData("FtcPoseIsNull", true);
+                continue;
+            }
+
+            double rangeError = (detection.ftcPose.range - DESIRED_TAG_DISTANCE);
+            double yawError = 30 - detection.ftcPose.yaw;
+            double bearingError = 0 - detection.ftcPose.bearing;
+            double turnPower = bearingError / -4d;
+            double rangeStraightPower = rangeError * 0.7 / 10d;
+            double rangeStrafePower = rangeError * 0.7 / 10d;
+            double yawStraightPower = yawError * 0.7 / 20d;
+            double yawStrafePower = yawError * 0.7 / -20d;
+            MoveData movement = MoveData.turn((float) turnPower, 0f, 1f).add(
+                    MoveData.strafe((float) rangeStrafePower, 0f, 1f),
+                    MoveData.straight((float) rangeStraightPower, 0f, 1f),
+                    MoveData.strafe((float) yawStrafePower, 0f, 1f),
+                    MoveData.straight((float) yawStraightPower, 0f, 1f)
+            );
+
+
+
+//            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+//            double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+//            double  headingError    = desiredTag.ftcPose.bearing;
+//            double  bearingError        = desiredTag.ftcPose.yaw;
+//
+//            // Use the speed and turn "gains" to calculate how we want the robot to straight.
+//            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+//            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+//            strafe = Range.clip(-bearingError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            telemetry.addData("turnPower", turnPower);
+            telemetry.addData("rangeStraightPower", rangeStraightPower);
+            telemetry.addData("rangeStrafePower", rangeStrafePower);
+            telemetry.addData("yawStraightPower", yawStraightPower);
+            telemetry.addData("yawStrafePower", yawStrafePower);
+            telemetry.addData("Bearing", detection.ftcPose.bearing);
+            telemetry.addData("Range", detection.ftcPose.range);
+            telemetry.addData("Yaw", detection.ftcPose.yaw);
+            telemetry.addData("bearingError", bearingError);
+            telemetry.addData("x", detection.robotPose.getPosition().x);
+            telemetry.addData("y", detection.robotPose.getPosition().y);
+            // ftcPose is the AprilTag relative to the camera
+            //robotPose is the camera relative to the field
+
+            return movement;
+        }
         return new MoveData();
     }
 
@@ -186,20 +243,20 @@ public class Move {
     }
 
     private static MoveData turnPower(double gain) {
-        double distanceToTurn = data.targetHeading - yaw();
+        double yawError = data.targetHeading - yaw();
         double shortDistanceToTurn;
 
-        if (distanceToTurn > 180) {
-            shortDistanceToTurn = distanceToTurn - 360;
-        } else if (distanceToTurn < -180) {
-            shortDistanceToTurn = distanceToTurn + 360;
+        if (yawError > 180) {
+            shortDistanceToTurn = yawError - 360;
+        } else if (yawError < -180) {
+            shortDistanceToTurn = yawError + 360;
         } else {
-            shortDistanceToTurn = distanceToTurn;
+            shortDistanceToTurn = yawError;
         }
 
-        float power = (float) (shortDistanceToTurn * gain / 90d);
+        float power = (float) (shortDistanceToTurn * gain / 45d);
 
-        return MoveData.turn(power, 0.05f, 0.6f);
+        return MoveData.turn(power, 0.1f, 0.6f);
     }
 
     private static double yaw() {
