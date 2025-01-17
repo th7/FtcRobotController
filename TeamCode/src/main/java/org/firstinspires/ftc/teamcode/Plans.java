@@ -30,13 +30,17 @@ public class Plans {
                 moveTiles(-0.3),
                 waitForArm(),
                 openClaws(),
-//                armToAboveFloorNoWait(),
-                turn(-90),
-//                waitForArm(),
-                armToFloor(),
+                armToAboveFloorNoWait(),
+                strafe(2),
+                turn(-86),
+                armToFloorBackwardNoWait(),
+                moveTiles(-0.35),
+                waitForArm(),
                 closeClaws(),
-                armToLowBasket(),
-                turn(90),
+                armToLowBasketNoWait(),
+                turn(135),
+                moveTiles(-0.7),
+                waitForArm(),
                 openClaws()
         );
     }
@@ -213,6 +217,14 @@ public class Plans {
         return move(oneTile * tiles);
     }
 
+    private static PlanPart strafe(double seconds) {
+        return new Step(
+                "strafe",
+                () -> Move.strafe(seconds),
+                Move::done
+        );
+    }
+
     private static PlanPart turn(double angle) {
         return new Step(
                 "turn " + String.valueOf(angle),
@@ -234,6 +246,14 @@ public class Plans {
         return new Step(
                 "armToAboveFloorNoWait",
                 () -> Arm.armToAboveFloor(),
+                () -> true
+        );
+    }
+
+    private static PlanPart armToFloorBackwardNoWait() {
+        return new Step(
+                "armToFloorBackwardNoWait",
+                () -> Arm.armToFloorBackward(),
                 () -> true
         );
     }
@@ -264,6 +284,13 @@ public class Plans {
                 //has to be a lambda because it needs to be called
         );
     }
+
+//    private static PlanPart goToFirstSample() {
+//        return new Step(
+//                "goToFirstSample",
+//                () ->
+//        );
+//    }
 
     private static PlanPart waitForArm() {
         return new Step(

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class Move {
     enum Mode {
-        DRIVE_STRAIGHT, TURN, NONE, FOLLOW_APRIL_TAG, DETECT_APRIL_TAG, ORBIT_APRIL_TAG;
+        DRIVE_STRAIGHT, TURN, STRAFE, NONE, FOLLOW_APRIL_TAG, DETECT_APRIL_TAG, ORBIT_APRIL_TAG;
     }
     private static DcMotor leftFront;
     private static DcMotor rightFront;
@@ -21,11 +22,13 @@ public class Move {
     private static AprilTagProcessor aprilTagProcessor;
     private static Telemetry telemetry;
     private static IMU imu;
+    private static ElapsedTime runtime;
     private static final double DESIRED_TAG_DISTANCE = 24.0;
     private static Move data;
     private MoveData moveData = new MoveData();
     private int targetPosition;
     private double targetHeading;
+    private double strafeEndTime;
     private Mode mode = Mode.NONE;
 
 
@@ -34,6 +37,7 @@ public class Move {
         rightFront = Hardware.rightFront;
         leftBack = Hardware.leftBack;
         rightBack = Hardware.rightBack;
+        runtime = Hardware.runtime;
         aprilTagProcessor = Hardware.aprilTagProcessor;
         telemetry = Hardware.telemetry;
         imu = Hardware.imu;
@@ -81,6 +85,7 @@ public class Move {
         switch (data.mode) {
             case DRIVE_STRAIGHT: return driveStraight();
             case TURN: return turn();
+            case STRAFE: return strafe();
             case FOLLOW_APRIL_TAG: return followAprilTagTick();
             case DETECT_APRIL_TAG: return detectAprilTagTick();
             case ORBIT_APRIL_TAG: return orbitAprilTagTick();
@@ -135,15 +140,22 @@ public class Move {
                 continue;
             }
 
-            double rangeError = (detection.ftcPose.range - DESIRED_TAG_DISTANCE);
-            double yawError = 30 - detection.ftcPose.yaw;
             double bearingError = 0 - detection.ftcPose.bearing;
             double turnPower = bearingError / -4d;
-            double rangeStraightPower = rangeError * 0.7 / 10d;
-            double rangeStrafePower = rangeError * 0.7 / 10d;
-            double yawStraightPower = yawError * 0.7 / 20d;
-            double yawStrafePower = yawError * 0.7 / -20d;
-            MoveData movement = MoveData.turn((float) turnPower, 0f, 1f).add(
+            MoveData turnData = MoveData.turn((float) turnPower, 0f, 1f);
+            if (bearingError > 10 || bearingError < -10) {
+                return turnData;
+            }
+
+            double rangeError = (detection.ftcPose.range - DESIRED_TAG_DISTANCE);
+            double yawError = 0 - detection.ftcPose.yaw;
+
+            double rangeStraightPower = rangeError * 0.5 / 10d;
+            double rangeStrafePower = rangeError * 0.5 / 10d;
+            double yawStraightPower = yawError * 0.5 / 20d;
+            double yawStrafePower = yawError * 0.5 / -20d;
+
+            MoveData movement = turnData.add(
                     MoveData.strafe((float) rangeStrafePower, 0f, 1f),
                     MoveData.straight((float) rangeStraightPower, 0f, 1f),
                     MoveData.strafe((float) yawStrafePower, 0f, 1f),
@@ -180,16 +192,13 @@ public class Move {
         return new MoveData();
     }
 
-    public static boolean inProgress() {
-        switch (data.mode) {
-            case DRIVE_STRAIGHT: return driveStraightInProgress();
-            case TURN: return turnInProgress();
-            default: return false;
-        }
-    }
-
     public static boolean done() {
-        return !inProgress();
+        switch (data.mode) {
+            case DRIVE_STRAIGHT: return driveStraightDone();
+            case TURN: return turnDone();
+            case STRAFE: return strafeDone();
+            default: return true;
+        }
     }
 
     public static void moveStraight(int distance) {
@@ -211,16 +220,25 @@ public class Move {
         }
     }
 
-    private static boolean driveStraightInProgress() {
-        boolean done = closeEnough(position(), data.targetPosition, 8);
-        if (done) { data.mode = Mode.NONE; }
-        return !done;
+    public static void strafe(double strafeDuration) {
+        data.mode = Mode.STRAFE;
+        data.strafeEndTime = runtime.seconds() + strafeDuration;
     }
 
-    private static boolean turnInProgress() {
+    private static boolean driveStraightDone() {
+        boolean done = closeEnough(position(), data.targetPosition, 8);
+        if (done) { data.mode = Mode.NONE; }
+        return done;
+    }
+
+    private static boolean strafeDone() {
+        return runtime.seconds() > data.strafeEndTime;
+    }
+
+    private static boolean turnDone() {
         boolean done = closeEnough(yaw(), data.targetHeading, 1);
         if (done) { data.mode = Mode.NONE; }
-        return !done;
+        return done;
     }
 
     private static boolean closeEnough(double a, double b, int threshold) {
@@ -232,6 +250,15 @@ public class Move {
         MoveData moveMovement = movePower();
 
         return turnMovement.add(moveMovement);
+    }
+
+    private static MoveData strafe() {
+        if (strafeDone()) {
+            return new MoveData();
+        } else {
+            MoveData turnMovement = turnPower(1d);
+            return MoveData.strafe(-0.5f, 0.1f, 1).add(turnMovement);
+        }
     }
 
     private static MoveData turn() {

@@ -71,7 +71,7 @@ public class Arm {
 
     public static void armToLowBasket() { data.targetArmPosition = 1500; }
 
-    public static void armToHighBasket() { data.targetArmPosition = 350; }
+    public static void armToFloorBackward () { data.targetArmPosition = 2800; }
 
     public static void armToAboveFloor () {
         data.targetArmPosition = 100;
