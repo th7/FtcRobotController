@@ -281,9 +281,9 @@ public class Move {
             shortDistanceToTurn = yawError;
         }
 
-        float power = (float) (shortDistanceToTurn * gain / 45d);
+        float power = (float) (shortDistanceToTurn * gain / 30d);
 
-        return MoveData.turn(power, 0.1f, 0.6f);
+        return MoveData.turn(power, 0.1f, 1f);
     }
 
     private static double yaw() {
@@ -292,8 +292,8 @@ public class Move {
 
     private static MoveData movePower() {
         int distanceToMove = data.targetPosition - position();
-        float power = (float) distanceToMove / 200f;
+        float power = (float) distanceToMove / 100f;
 
-        return MoveData.straight(power, 0.05f, 0.6f);
+        return MoveData.straight(power, 0.05f, 1f);
     }
 }

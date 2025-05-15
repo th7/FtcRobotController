@@ -51,9 +51,11 @@ public class Arm {
         return Util.closeEnough(armMotor.getCurrentPosition(), data.targetArmPosition, 5);
     }
 
-    public static boolean done(){
+    public static boolean done() {
         return clawDone() && armMoveDone();
     }
+
+
 
     public static void manualUp() {
         data.targetArmPosition = armMotor.getCurrentPosition() + manualArmRate;
@@ -65,13 +67,13 @@ public class Arm {
 
     public static void armToFloor() { data.targetArmPosition = maxLiftPosition; }
 
-    public static void armAway() {
+    public static void armToFloorForwards() {
         data.targetArmPosition = minLiftPosition;
     }
 
     public static void armToLowBasket() { data.targetArmPosition = 1500; }
 
-    public static void armToFloorBackward () { data.targetArmPosition = 2800; }
+    public static void armToFloorBackward () { data.targetArmPosition = 2600; }
 
     public static void armToAboveFloor () {
         data.targetArmPosition = 100;

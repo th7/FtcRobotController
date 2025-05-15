@@ -29,19 +29,30 @@ public class Plans {
                 armToLowBasketNoWait(),
                 moveTiles(-0.3),
                 waitForArm(),
+                closeClaws(), // its already closed but we just want it to wait so that the extra arm movement doesn't fling it off the field
                 openClaws(),
-                armToAboveFloorNoWait(),
+                closeClawsNoWait(),
+                armToFloorForwardsNoWait(),
                 strafe(2),
                 turn(-86),
                 armToFloorBackwardNoWait(),
-                moveTiles(-0.35),
+                openClawsNoWait(),
+                moveTiles(-0.25),
                 waitForArm(),
+                moveTiles(-0.3),
                 closeClaws(),
                 armToLowBasketNoWait(),
                 turn(135),
-                moveTiles(-0.7),
+                moveTiles(-1),
                 waitForArm(),
-                openClaws()
+                openClaws(),
+                closeClaws(),
+                openClaws(),
+                closeClaws(),
+                openClaws(),
+                closeClaws(),
+                openClaws(),
+                closeClaws()
         );
     }
 
@@ -268,6 +279,16 @@ public class Plans {
         );
     }
 
+    private static PlanPart armToFloorForwardsNoWait() {
+        return new Step(
+                "armToFloor",
+                () -> Arm.armToFloorForwards(),
+                //does not need lambda :)
+                () -> true
+                //Arm.armToFloor lambda thingy could look like the done
+        );
+    }
+
     private static PlanPart armToLowBasket() {
         return new Step(
                 "armToLowBasket",
@@ -308,6 +329,14 @@ public class Plans {
         );
     }
 
+    private static PlanPart openClawsNoWait() {
+        return new Step(
+                "openClaws",
+                () -> Arm.openClaw(),
+                () -> true
+        );
+    }
+
     private static PlanPart closeClaws() {
         return new Step(
                 "closeClaws",
@@ -316,6 +345,13 @@ public class Plans {
         );
     }
 
+    private static PlanPart closeClawsNoWait() {
+        return new Step(
+                "closeClaws",
+                () -> Arm.closeClaw(),
+                () -> true
+        );
+    }
     public static PlanPart aprilTag() {
         return new Step(
                 Move::followAprilTag,
